@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtc_engine_example/components/basic_video_configuration_widget.dart';
 import 'package:agora_rtc_engine_example/config/agora.config.dart' as config;
@@ -5,6 +7,16 @@ import 'package:agora_rtc_engine_example/components/example_actions_widget.dart'
 import 'package:agora_rtc_engine_example/components/log_sink.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+const banubaClientToken = <#Place client tokwn here#>;
+
+const banubaExtprovider = 'Banuba';
+const banubaExtension = 'BanubaFilter';
+const loadEffect = 'load_effect';
+const unloadEffect = 'unload_effect';
+const setEffectsPath = 'set_effects_path';
+const setToken = 'set_banuba_license_token';
+const evalJs = 'eval_js';
 
 /// MultiChannel Example
 class JoinChannelVideo extends StatefulWidget {
@@ -90,8 +102,12 @@ class _State extends State<JoinChannelVideo> {
 
     _engine.registerEventHandler(_rtcEngineEventHandler);
 
+    await intiBanuba();
+
     await _engine.enableVideo();
     await _engine.startPreview();
+
+    await loadBanubaEffect('Glasses');
   }
 
   Future<void> _joinChannel() async {
@@ -115,6 +131,48 @@ class _State extends State<JoinChannelVideo> {
     setState(() {
       switchCamera = !switchCamera;
     });
+  }
+
+  /*
+   * Banuba integration
+   */
+
+  Future<void> enableExtension() async {
+    if (Platform.isAndroid) {
+      _engine.loadExtensionProvider(path: "banuba");
+      _engine.loadExtensionProvider(path: "banuba-plugin");
+    }
+
+    await _engine.enableExtension(
+        provider: banubaExtprovider,
+        extension: banubaExtension,
+        type: MediaSourceType.unknownMediaSource,
+        enable: true);
+  }
+
+  Future<void> disableExtension() async {
+    await _engine.enableExtension(
+        provider: banubaExtprovider,
+        extension: banubaExtension,
+        type: MediaSourceType.unknownMediaSource,
+        enable: false);
+  }
+
+  Future<void> intiBanuba() async {
+    await enableExtension();
+    await _engine.setExtensionProperty(
+        provider: banubaExtprovider,
+        extension: banubaExtension,
+        key: setToken,
+        value: banubaClientToken);
+  }
+
+  Future<void> loadBanubaEffect(String name) async {
+    await _engine.setExtensionProperty(
+        provider: banubaExtprovider,
+        extension: banubaExtension,
+        key: loadEffect,
+        value: 'effects/' + name);
   }
 
   @override
