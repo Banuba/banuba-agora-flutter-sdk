@@ -1,5 +1,5 @@
 This is forked Agora repository to demonstrate integration with [Banuba SDK](https://docs.banuba.com).
-Integration is made in 
+Integration was made in 
 [join_channel_video](https://github.com/Banuba/banuba-agora-flutter-sdk/tree/main/example/lib/examples/basic/join_channel_video).
 Intial changes was made in [this commit](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/compare/main...Banuba:banuba-agora-flutter-sdk:main).
 
