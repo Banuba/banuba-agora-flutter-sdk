@@ -40,8 +40,8 @@ class AgoraRtcException implements Exception {
 ///
 /// Returns
 /// One RtcEngine object.
-RtcEngine createAgoraRtcEngine() {
-  return impl.RtcEngineImpl.create();
+RtcEngine createAgoraRtcEngine({Object? sharedNativeHandle}) {
+  return impl.RtcEngineImpl.create(sharedNativeHandle: sharedNativeHandle);
 }
 
 /// Creates one RtcEngineEx object.
@@ -50,13 +50,13 @@ RtcEngine createAgoraRtcEngine() {
 ///
 /// Returns
 /// One RtcEngineEx object.
-RtcEngineEx createAgoraRtcEngineEx() {
-  return impl.RtcEngineImpl.create();
+RtcEngineEx createAgoraRtcEngineEx({Object? sharedNativeHandle}) {
+  return impl.RtcEngineImpl.create(sharedNativeHandle: sharedNativeHandle);
 }
 
 /// Gets one MediaPlayerCacheManager instance.
 ///
-/// When you successfully call this method, the SDK returns a media player cache manager instance. The cache manager is a singleton pattern. Therefore, multiple calls to this method returns the same instance. Make sure the RtcEngine is initialized before you call this method.
+/// Before calling any APIs in the MediaPlayerCacheManager class, you need to call this method to get a cache manager instance of a media player.
 ///
 /// Returns
 /// The MediaPlayerCacheManager instance.

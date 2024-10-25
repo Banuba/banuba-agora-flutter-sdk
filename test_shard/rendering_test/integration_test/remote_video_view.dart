@@ -92,7 +92,10 @@ class _RemoteVideoViewState extends State<RemoteVideoView> {
 
     videoFrameObserver = VideoFrameObserver(
       onRenderVideoFrame: (channelId, remoteUid, videoFrame) {
-        widget.onRendered(rtcEngine);
+        // Delay 2 seconds to ensure the first frame showed
+        Future.delayed(const Duration(seconds: 2), () {
+          widget.onRendered(rtcEngine);
+        });
       },
     );
 
@@ -112,7 +115,7 @@ class _RemoteVideoViewState extends State<RemoteVideoView> {
 
     mediaPlayerSourceObserver = MediaPlayerSourceObserver(
       onPlayerSourceStateChanged:
-          (MediaPlayerState state, MediaPlayerError ec) async {
+          (MediaPlayerState state, MediaPlayerReason ec) async {
         if (state == MediaPlayerState.playerStateOpenCompleted) {
           await mediaPlayerController.play();
           await mediaPlayerController.setLoopCount(99999);

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:agora_rtc_engine_example/examples/advanced/music_player/music_player.dart';
-import 'package:agora_rtc_engine_example/examples/advanced/push_encoded_video_frame/push_encoded_video_frame.dart';
 import 'package:agora_rtc_engine_example/examples/advanced/push_video_frame/push_video_frame.dart';
 import 'package:agora_rtc_engine_example/examples/advanced/rtmp_streaming/rtmp_streaming.dart';
 import 'package:agora_rtc_engine_example/examples/advanced/screen_sharing/screen_sharing.dart';
@@ -17,7 +16,7 @@ import 'package:agora_rtc_engine_example/examples/advanced/stream_message/stream
 import 'package:agora_rtc_engine_example/examples/advanced/take_snapshot/take_snapshot.dart';
 import 'package:flutter/foundation.dart';
 
-import 'audio_mixing/audio_mixing.dart';
+import 'audio_effect_mixing/audio_effect_mixing.dart';
 import 'audio_spectrum/audio_spectrum.dart';
 import 'channel_media_relay/channel_media_relay.dart';
 import 'device_manager/device_manager.dart';
@@ -36,7 +35,8 @@ import 'voice_changer/voice_changer.dart';
 /// Data source for advanced examples
 final advanced = [
   {'name': 'Advanced'},
-  if (!kIsWeb) {'name': 'AudioMixing', 'widget': const AudioMixing()},
+  if (!kIsWeb)
+    {'name': 'AudioEffectMixing', 'widget': const AudioEffectMixing()},
   if (!kIsWeb)
     {'name': 'ChannelMediaRelay', 'widget': const ChannelMediaRelay()},
   if (kIsWeb || !(Platform.isAndroid || Platform.isIOS))
@@ -51,7 +51,7 @@ final advanced = [
       'name': 'SetVideoEncoderConfiguration',
       'widget': const SetVideoEncoderConfiguration()
     },
-  if (!kIsWeb) {'name': 'StreamMessage', 'widget': const StreamMessage()},
+  {'name': 'StreamMessage', 'widget': const StreamMessage()},
   if (!kIsWeb) {'name': 'VoiceChanger', 'widget': const VoiceChanger()},
   if (!kIsWeb)
     {
@@ -80,7 +80,7 @@ final advanced = [
       'name': 'StartLocalVideoTranscoder',
       'widget': const StartLocalVideoTranscoder()
     },
-  if (!kIsWeb)
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
     {'name': 'ProcessVideoRawData', 'widget': const ProcessVideoRawData()},
   if (!kIsWeb)
     {'name': 'ProcessAudioRawData', 'widget': const ProcessAudioRawData()},
@@ -88,9 +88,6 @@ final advanced = [
   if (!kIsWeb)
     {'name': 'MediaRecorder', 'widget': const MediaRecorderExample()},
   if (!kIsWeb) {'name': 'PushVideoFrame', 'widget': const PushVideoFrame()},
-  // {'name': 'PushAudioFrame', 'widget': const PushAudioFrame()},
-  if (!kIsWeb)
-    {'name': 'PushEncodedVideoFrame', 'widget': const PushEncodedVideoFrame()},
   if (!kIsWeb)
     {
       'name': 'SpatialAudioWithMediaPlayer',

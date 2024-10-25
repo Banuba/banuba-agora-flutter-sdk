@@ -11,15 +11,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iris_tester/iris_tester.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
-void generatedTestCases(IrisTester irisTester) {
+import '../testcases/event_ids_mapping.dart';
+
+void generatedTestCases(ValueGetter<IrisTester> irisTester) {
   testWidgets(
-    'onEncodedVideoFrameReceived',
+    'VideoEncodedFrameObserver.onEncodedVideoFrameReceived',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaEngine = rtcEngine.getMediaEngine();
 
       final onEncodedVideoFrameReceivedCompleter = Completer<bool>();
@@ -38,26 +41,27 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const int uid = 10;
-        Uint8List imageBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        const int length = 10;
-        const VideoCodecType videoEncodedFrameInfoCodecType =
+        int uid = 5;
+        Uint8List imageBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        int length = 5;
+        VideoCodecType videoEncodedFrameInfoCodecType =
             VideoCodecType.videoCodecNone;
-        const VideoFrameType videoEncodedFrameInfoFrameType =
+        VideoFrameType videoEncodedFrameInfoFrameType =
             VideoFrameType.videoFrameTypeBlankFrame;
-        const VideoOrientation videoEncodedFrameInfoRotation =
+        VideoOrientation videoEncodedFrameInfoRotation =
             VideoOrientation.videoOrientation0;
-        const VideoStreamType videoEncodedFrameInfoStreamType =
+        VideoStreamType videoEncodedFrameInfoStreamType =
             VideoStreamType.videoStreamHigh;
-        const int videoEncodedFrameInfoWidth = 10;
-        const int videoEncodedFrameInfoHeight = 10;
-        const int videoEncodedFrameInfoFramesPerSecond = 10;
-        const int videoEncodedFrameInfoTrackId = 10;
-        const int videoEncodedFrameInfoCaptureTimeMs = 10;
-        const int videoEncodedFrameInfoDecodeTimeMs = 10;
-        const int videoEncodedFrameInfoUid = 10;
-        const EncodedVideoFrameInfo videoEncodedFrameInfo =
-            EncodedVideoFrameInfo(
+        int videoEncodedFrameInfoUid = 5;
+        int videoEncodedFrameInfoWidth = 5;
+        int videoEncodedFrameInfoHeight = 5;
+        int videoEncodedFrameInfoFramesPerSecond = 5;
+        int videoEncodedFrameInfoTrackId = 5;
+        int videoEncodedFrameInfoCaptureTimeMs = 5;
+        int videoEncodedFrameInfoDecodeTimeMs = 5;
+        int videoEncodedFrameInfoPresentationMs = 5;
+        EncodedVideoFrameInfo videoEncodedFrameInfo = EncodedVideoFrameInfo(
+          uid: videoEncodedFrameInfoUid,
           codecType: videoEncodedFrameInfoCodecType,
           width: videoEncodedFrameInfoWidth,
           height: videoEncodedFrameInfoHeight,
@@ -67,8 +71,8 @@ void generatedTestCases(IrisTester irisTester) {
           trackId: videoEncodedFrameInfoTrackId,
           captureTimeMs: videoEncodedFrameInfoCaptureTimeMs,
           decodeTimeMs: videoEncodedFrameInfoDecodeTimeMs,
-          uid: videoEncodedFrameInfoUid,
           streamType: videoEncodedFrameInfoStreamType,
+          presentationMs: videoEncodedFrameInfoPresentationMs,
         );
 
         final eventJson = {
@@ -78,18 +82,15 @@ void generatedTestCases(IrisTester irisTester) {
           'videoEncodedFrameInfo': videoEncodedFrameInfo.toJson(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent(
-              'VideoEncodedFrameObserver_onEncodedVideoFrameReceived',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'VideoEncodedFrameObserver_onEncodedVideoFrameReceived',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds = eventIdsMapping[
+                'VideoEncodedFrameObserver_onEncodedVideoFrameReceived'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onEncodedVideoFrameReceivedCompleter.isCompleted) {
               onEncodedVideoFrameReceivedCompleter.complete(true);
             }

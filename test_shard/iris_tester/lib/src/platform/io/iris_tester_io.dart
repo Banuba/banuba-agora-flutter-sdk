@@ -44,11 +44,14 @@ class IrisTesterIO implements IrisTester {
   @override
   void initialize() {
     _fakeRtcEngineHandle = _nativeIrisTesterBinding.CreateFakeRtcEngine();
+    _nativeIrisTesterBinding.SetShouldReadBufferFromJson(0);
   }
 
   @override
   void dispose() {
-    calloc.free(_fakeRtcEngineHandle);
+    // calloc.free(_fakeRtcEngineHandle);
+
+    _nativeIrisTesterBinding.DestroyFakeRtcEngine(_fakeRtcEngineHandle);
   }
 
   @override

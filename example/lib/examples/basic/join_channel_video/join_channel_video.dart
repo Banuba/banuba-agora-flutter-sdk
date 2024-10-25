@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtc_engine_example/components/basic_video_configuration_widget.dart';
+import 'package:agora_rtc_engine_example/components/stats_monitoring_widget.dart';
 import 'package:agora_rtc_engine_example/config/agora.config.dart' as config;
 import 'package:agora_rtc_engine_example/components/example_actions_widget.dart';
 import 'package:agora_rtc_engine_example/components/log_sink.dart';
@@ -30,7 +31,12 @@ class JoinChannelVideo extends StatefulWidget {
 class _State extends State<JoinChannelVideo> {
   late final RtcEngine _engine;
 
-  bool isJoined = false, switchCamera = true, switchRender = true;
+  bool isJoined = false,
+      switchCamera = true,
+      switchRender = true,
+      openCamera = true,
+      muteCamera = false,
+      muteAllRemoteVideo = false;
   Set<int> remoteUid = {};
   late TextEditingController _controller;
   bool _isUseFlutterTexture = false;
@@ -98,6 +104,11 @@ class _State extends State<JoinChannelVideo> {
           remoteUid.clear();
         });
       },
+      onRemoteVideoStateChanged: (RtcConnection connection, int remoteUid,
+          RemoteVideoState state, RemoteVideoStateReason reason, int elapsed) {
+        logSink.log(
+            '[onRemoteVideoStateChanged] connection: ${connection.toJson()} remoteUid: $remoteUid state: $state reason: $reason elapsed: $elapsed');
+      },
     );
 
     _engine.registerEventHandler(_rtcEngineEventHandler);
@@ -124,12 +135,38 @@ class _State extends State<JoinChannelVideo> {
 
   Future<void> _leaveChannel() async {
     await _engine.leaveChannel();
+    setState(() {
+      openCamera = true;
+      muteCamera = false;
+      muteAllRemoteVideo = false;
+    });
   }
 
   Future<void> _switchCamera() async {
     await _engine.switchCamera();
     setState(() {
       switchCamera = !switchCamera;
+    });
+  }
+
+  _openCamera() async {
+    await _engine.enableLocalVideo(!openCamera);
+    setState(() {
+      openCamera = !openCamera;
+    });
+  }
+
+  _muteLocalVideoStream() async {
+    await _engine.muteLocalVideoStream(!muteCamera);
+    setState(() {
+      muteCamera = !muteCamera;
+    });
+  }
+
+  _muteAllRemoteVideoStreams() async {
+    await _engine.muteAllRemoteVideoStreams(!muteAllRemoteVideo);
+    setState(() {
+      muteAllRemoteVideo = !muteAllRemoteVideo;
     });
   }
 
@@ -181,16 +218,20 @@ class _State extends State<JoinChannelVideo> {
       displayContentBuilder: (context, isLayoutHorizontal) {
         return Stack(
           children: [
-            AgoraVideoView(
-              controller: VideoViewController(
-                rtcEngine: _engine,
-                canvas: const VideoCanvas(uid: 0),
-                useFlutterTexture: _isUseFlutterTexture,
-                useAndroidSurfaceView: _isUseAndroidSurfaceView,
+            StatsMonitoringWidget(
+              rtcEngine: _engine,
+              uid: 0,
+              child: AgoraVideoView(
+                controller: VideoViewController(
+                  rtcEngine: _engine,
+                  canvas: const VideoCanvas(uid: 0),
+                  useFlutterTexture: _isUseFlutterTexture,
+                  useAndroidSurfaceView: _isUseAndroidSurfaceView,
+                ),
+                onAgoraVideoViewCreated: (viewId) {
+                  _engine.startPreview();
+                },
               ),
-              onAgoraVideoViewCreated: (viewId) {
-                _engine.startPreview();
-              },
             ),
             Align(
               alignment: Alignment.topLeft,
@@ -199,16 +240,21 @@ class _State extends State<JoinChannelVideo> {
                 child: Row(
                   children: List.of(remoteUid.map(
                     (e) => SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: AgoraVideoView(
-                        controller: VideoViewController.remote(
-                          rtcEngine: _engine,
-                          canvas: VideoCanvas(uid: e),
-                          connection:
-                              RtcConnection(channelId: _controller.text),
-                          useFlutterTexture: _isUseFlutterTexture,
-                          useAndroidSurfaceView: _isUseAndroidSurfaceView,
+                      width: 200,
+                      height: 200,
+                      child: StatsMonitoringWidget(
+                        rtcEngine: _engine,
+                        uid: e,
+                        channelId: _controller.text,
+                        child: AgoraVideoView(
+                          controller: VideoViewController.remote(
+                            rtcEngine: _engine,
+                            canvas: VideoCanvas(uid: e),
+                            connection:
+                                RtcConnection(channelId: _controller.text),
+                            useFlutterTexture: _isUseFlutterTexture,
+                            useAndroidSurfaceView: _isUseAndroidSurfaceView,
+                          ),
                         ),
                       ),
                     ),
@@ -324,6 +370,24 @@ class _State extends State<JoinChannelVideo> {
               ElevatedButton(
                 onPressed: _switchCamera,
                 child: Text('Camera ${switchCamera ? 'front' : 'rear'}'),
+              ),
+            ],
+            if (kIsWeb) ...[
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: _muteLocalVideoStream,
+                child: Text('Camera ${muteCamera ? 'muted' : 'unmute'}'),
+              ),
+              ElevatedButton(
+                onPressed: _muteAllRemoteVideoStreams,
+                child: Text(
+                    'All Remote Camera ${muteAllRemoteVideo ? 'muted' : 'unmute'}'),
+              ),
+              ElevatedButton(
+                onPressed: _openCamera,
+                child: Text('Camera ${openCamera ? 'on' : 'off'}'),
               ),
             ],
           ],

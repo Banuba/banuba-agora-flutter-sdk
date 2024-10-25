@@ -10,6 +10,7 @@ class FakeIrisMethodChannelConfig {
     this.isFakeRemoveHotRestartListener = true,
     this.isFakeDispose = true,
     this.delayInvokeMethod = const {},
+    this.fakeInvokeMethods = const {},
   });
 
   final bool isFakeInitilize;
@@ -19,16 +20,17 @@ class FakeIrisMethodChannelConfig {
   final bool isFakeRemoveHotRestartListener;
   final bool isFakeDispose;
   final Map<String, int> delayInvokeMethod;
+  final Map<String, CallApiResult> fakeInvokeMethods;
 
-  FakeIrisMethodChannelConfig copyWith({
-    bool? isFakeInitilize,
-    bool? isFakeInvokeMethod,
-    bool? isFakeGetNativeHandle,
-    bool? isFakeAddHotRestartListener,
-    bool? isFakeRemoveHotRestartListener,
-    bool? isFakeDispose,
-    Map<String, int>? delayInvokeMethod,
-  }) {
+  FakeIrisMethodChannelConfig copyWith(
+      {bool? isFakeInitilize,
+      bool? isFakeInvokeMethod,
+      bool? isFakeGetNativeHandle,
+      bool? isFakeAddHotRestartListener,
+      bool? isFakeRemoveHotRestartListener,
+      bool? isFakeDispose,
+      Map<String, int>? delayInvokeMethod,
+      Map<String, CallApiResult>? fakeInvokeMethods}) {
     return FakeIrisMethodChannelConfig(
       isFakeInitilize: isFakeInitilize ?? this.isFakeInitilize,
       isFakeInvokeMethod: isFakeInvokeMethod ?? this.isFakeInvokeMethod,
@@ -40,6 +42,7 @@ class FakeIrisMethodChannelConfig {
           isFakeRemoveHotRestartListener ?? this.isFakeRemoveHotRestartListener,
       isFakeDispose: isFakeDispose ?? this.isFakeDispose,
       delayInvokeMethod: delayInvokeMethod ?? this.delayInvokeMethod,
+      fakeInvokeMethods: fakeInvokeMethods ?? this.fakeInvokeMethods,
     );
   }
 }
@@ -57,6 +60,7 @@ class FakeIrisMethodChannel extends IrisMethodChannel {
   @override
   Future<InitilizationResult?> initilize(
       List<InitilizationArgProvider> args) async {
+    methodCallQueue.add(const IrisMethodCall('initilize', '{}'));
     if (_config.isFakeInitilize) {
       return null;
     }
@@ -77,6 +81,9 @@ class FakeIrisMethodChannel extends IrisMethodChannel {
 
     if (_config.isFakeInvokeMethod) {
       await __maybeDelay();
+      if (_config.fakeInvokeMethods.containsKey(methodCall.funcName)) {
+        return _config.fakeInvokeMethods[methodCall.funcName]!;
+      }
       return CallApiResult(data: {'result': 0}, irisReturnCode: 0);
     }
 
@@ -87,6 +94,7 @@ class FakeIrisMethodChannel extends IrisMethodChannel {
 
   @override
   int getApiEngineHandle() {
+    methodCallQueue.add(const IrisMethodCall('getApiEngineHandle', '{}'));
     if (_config.isFakeGetNativeHandle) {
       return 100;
     }
@@ -95,6 +103,7 @@ class FakeIrisMethodChannel extends IrisMethodChannel {
 
   @override
   VoidCallback addHotRestartListener(HotRestartListener listener) {
+    methodCallQueue.add(const IrisMethodCall('addHotRestartListener', '{}'));
     if (_config.isFakeAddHotRestartListener) {
       return () {};
     }
@@ -104,6 +113,7 @@ class FakeIrisMethodChannel extends IrisMethodChannel {
 
   @override
   void removeHotRestartListener(HotRestartListener listener) {
+    methodCallQueue.add(const IrisMethodCall('removeHotRestartListener', '{}'));
     if (_config.isFakeRemoveHotRestartListener) {
       return;
     }
@@ -113,6 +123,7 @@ class FakeIrisMethodChannel extends IrisMethodChannel {
 
   @override
   Future<void> dispose() async {
+    methodCallQueue.add(const IrisMethodCall('dispose', '{}'));
     if (_config.isFakeDispose) {
       return;
     }

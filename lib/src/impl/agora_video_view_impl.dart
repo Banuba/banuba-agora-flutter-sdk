@@ -7,10 +7,9 @@ import 'package:agora_rtc_engine/src/impl/video_view_controller_impl.dart';
 import 'package:agora_rtc_engine/src/render/agora_video_view.dart';
 import 'package:agora_rtc_engine/src/render/video_view_controller.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart' show SchedulerBinding;
+import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'agora_rtc_renderer.dart';
 
@@ -315,7 +314,7 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
 
     if (!_controllerInternal!.isInitialzed) {
       _listener ??= () {
-        _controllerInternal!.removeInitializedCompletedListener(_listener!);
+        _controllerInternal?.removeInitializedCompletedListener(_listener!);
         _listener = null;
 
         _initializeTexture();
@@ -327,6 +326,10 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
   }
 
   Future<void> _initializeTexture() async {
+    if (_controllerInternal == null) {
+      return;
+    }
+
     final oldTextureId = _controllerInternal!.getTextureId();
     await _controllerInternal!.initializeRender();
     final textureId = _controllerInternal!.getTextureId();
@@ -465,16 +468,6 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
     return child;
   }
 
-  Future<void> _setSizeNative(Size size, Offset position) async {
-    assert(defaultTargetPlatform == TargetPlatform.android);
-    // Call `SurfaceTexture.setDefaultBufferSize` on Android， or the video will be
-    // black screen
-    await methodChannel!.invokeMethod('setSizeNative', {
-      'width': size.width.toInt(),
-      'height': size.height.toInt(),
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget result = const SizedBox.expand();
@@ -508,63 +501,8 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
           result = _applyRenderMode(RenderModeType.renderModeFit, result);
         }
       }
-
-      // Only need to size in native side on Android
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-        result = _SizeChangedAwareWidget(
-          onChange: (size) {
-            _setSizeNative(size, Offset.zero);
-          },
-          child: result,
-        );
-      }
     }
 
     return result;
-  }
-}
-
-typedef _OnWidgetSizeChange = void Function(Size size);
-
-class _SizeChangedAwareRenderObject extends RenderProxyBox {
-  Size? oldSize;
-  _OnWidgetSizeChange onChange;
-
-  _SizeChangedAwareRenderObject(this.onChange);
-
-  @override
-  void performLayout() {
-    super.performLayout();
-
-    Size newSize = child!.size;
-    if (oldSize == newSize) return;
-
-    oldSize = newSize;
-    // Compatible with Flutter SDK 2.10.x
-    // ignore: invalid_null_aware_operator
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
-      onChange(newSize);
-    });
-  }
-}
-
-class _SizeChangedAwareWidget extends SingleChildRenderObjectWidget {
-  final _OnWidgetSizeChange onChange;
-
-  const _SizeChangedAwareWidget({
-    Key? key,
-    required this.onChange,
-    required Widget child,
-  }) : super(key: key, child: child);
-
-  @override
-  RenderObject createRenderObject(BuildContext context) {
-    return _SizeChangedAwareRenderObject(onChange);
-  }
-
-  @override
-  void updateRenderObject(BuildContext context,
-      covariant _SizeChangedAwareRenderObject renderObject) {
-    renderObject.onChange = onChange;
   }
 }

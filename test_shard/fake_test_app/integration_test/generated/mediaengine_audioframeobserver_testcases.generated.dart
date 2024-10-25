@@ -11,15 +11,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iris_tester/iris_tester.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
-void generatedTestCases(IrisTester irisTester) {
+import '../testcases/event_ids_mapping.dart';
+
+void generatedTestCases(ValueGetter<IrisTester> irisTester) {
   testWidgets(
-    'onPlaybackAudioFrameBeforeMixing',
+    'AudioFrameObserver.onPlaybackAudioFrameBeforeMixing',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaEngine = rtcEngine.getMediaEngine();
 
       final onPlaybackAudioFrameBeforeMixingCompleter = Completer<bool>();
@@ -38,19 +41,21 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const String channelId = "hello";
-        const int uid = 10;
-        const AudioFrameType audioFrameType = AudioFrameType.frameTypePcm16;
-        const BytesPerSample audioFrameBytesPerSample =
+        String channelId = "hello";
+        int uid = 5;
+        AudioFrameType audioFrameType = AudioFrameType.frameTypePcm16;
+        BytesPerSample audioFrameBytesPerSample =
             BytesPerSample.twoBytesPerSample;
-        const int audioFrameSamplesPerChannel = 10;
-        const int audioFrameChannels = 10;
-        const int audioFrameSamplesPerSec = 10;
-        Uint8List audioFrameBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        const int audioFrameRenderTimeMs = 10;
-        const int audioFrameAvsyncType = 10;
-        const int audioFramePresentationMs = 10;
-        final AudioFrame audioFrame = AudioFrame(
+        int audioFrameSamplesPerChannel = 5;
+        int audioFrameChannels = 5;
+        int audioFrameSamplesPerSec = 5;
+        Uint8List audioFrameBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        int audioFrameRenderTimeMs = 5;
+        int audioFrameAvsyncType = 5;
+        int audioFramePresentationMs = 5;
+        int audioFrameAudioTrackNumber = 5;
+        int audioFrameRtpTimestamp = 5;
+        AudioFrame audioFrame = AudioFrame(
           type: audioFrameType,
           samplesPerChannel: audioFrameSamplesPerChannel,
           bytesPerSample: audioFrameBytesPerSample,
@@ -60,6 +65,8 @@ void generatedTestCases(IrisTester irisTester) {
           renderTimeMs: audioFrameRenderTimeMs,
           avsyncType: audioFrameAvsyncType,
           presentationMs: audioFramePresentationMs,
+          audioTrackNumber: audioFrameAudioTrackNumber,
+          rtpTimestamp: audioFrameRtpTimestamp,
         );
 
         final eventJson = {
@@ -68,18 +75,15 @@ void generatedTestCases(IrisTester irisTester) {
           'audioFrame': audioFrame.toJson(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent(
-              'AudioFrameObserver_onPlaybackAudioFrameBeforeMixing',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'AudioFrameObserver_onPlaybackAudioFrameBeforeMixing',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds = eventIdsMapping[
+                'AudioFrameObserver_onPlaybackAudioFrameBeforeMixing'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPlaybackAudioFrameBeforeMixingCompleter.isCompleted) {
               onPlaybackAudioFrameBeforeMixingCompleter.complete(true);
             }

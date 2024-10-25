@@ -15,7 +15,7 @@ class VideoViewController
 private:
     flutter::BinaryMessenger *messenger_;
     flutter::TextureRegistrar *texture_registrar_;
-    std::map<int64_t, std::unique_ptr<TextureRender>> renderers_;
+    std::map<int64_t, TextureRender *> renderers_;
 
     void HandleMethodCall(
         const flutter::MethodCall<flutter::EncodableValue> &method_call,
@@ -29,10 +29,12 @@ private:
         const intptr_t &irisRtcRenderingHandle,
         unsigned int uid,
         const std::string &channelId,
-        unsigned int videoSourceType, 
+        unsigned int videoSourceType,
         unsigned int videoViewSetupMode);
 
     bool DestroyTextureRender(int64_t textureId);
+
+    void Dispose();
 
 public:
     VideoViewController(flutter::TextureRegistrar *texture_registrar, flutter::BinaryMessenger *messenger_);

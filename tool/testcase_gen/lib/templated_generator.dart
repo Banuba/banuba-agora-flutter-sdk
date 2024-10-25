@@ -86,9 +86,17 @@ class TemplatedGenerator extends DefaultGenerator {
       String output = '';
       String outputFileName = '';
       if (templated is MethoCallTemplatedTestCase) {
+        late Clazz clazz;
+        try {
+          clazz = parseResult.getClazz(templated.className)[0];
+        } catch (e) {
+          stderr.writeln('Can not find the className: ${templated.className}.');
+          rethrow;
+        }
+
         output = generateWithTemplate(
           parseResult: parseResult,
-          clazz: parseResult.getClazz(templated.className)[0],
+          clazz: clazz,
           testCaseTemplate: templated.testCaseTemplate,
           testCasesContentTemplate: templated.testCaseFileTemplate,
           methodInvokeObjectName: templated.methodInvokeObjectName,
@@ -239,37 +247,25 @@ class TemplatedGenerator extends DefaultGenerator {
             '${fireEventSuffix[0].toUpperCase()}${fireEventSuffix.substring(1)}';
       }
 
-      fireEventImplBuffer.writeln('{');
-      fireEventImplBuffer.writeln(pb.toString());
-      fireEventImplBuffer.writeln(jsonBuffer.toString());
-      fireEventImplBuffer.writeln('if (!kIsWeb) {');
-      fireEventImplBuffer.writeln(
-          'irisTester.fireEvent(\'${eventHandlerClazz.name}_$fireEventSuffix\', params: eventJson);');
-      if (eventPrefixOverride != null) {
-        fireEventImplBuffer.writeln(
-            'irisTester.fireEvent(\'${eventPrefixOverride}_$fireEventSuffix\', params: eventJson);');
-      }
-      fireEventImplBuffer.writeln('} else {');
-      // On web, the callback with the `RtcConnection` is appended `Ex` suffix
-      if (isSuffixEx) {
-        fireEventSuffix = '${fireEventSuffix}Ex';
-      }
-      fireEventImplBuffer.writeln(
-          'final ret = irisTester.fireEvent(\'${eventHandlerClazz.name}_$fireEventSuffix\', params: eventJson);');
-
+      final event = '${eventHandlerClazz.name}_$fireEventSuffix';
       fireEventImplBuffer.writeln('''
-// Delay 200 milliseconds to ensure the callback is called.
-await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-if (ret) {
-  if (!$eventCompleterName.isCompleted) {
-    $eventCompleterName.complete(true);
+{
+  ${pb.toString()}
+  ${jsonBuffer.toString()}
+  final eventIds = eventIdsMapping['$event'] ?? [];
+  for (final event in eventIds) {
+    final ret = irisTester().fireEvent(event, params: eventJson);
+    // Delay 200 milliseconds to ensure the callback is called.
+    await Future.delayed(const Duration(milliseconds: 200));
+    // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+    if (kIsWeb && ret) {
+      if (!$eventCompleterName.isCompleted) {
+        $eventCompleterName.complete(true);
+      }
+    }
   }
 }
 ''');
-
-      fireEventImplBuffer.writeln('}');
-      fireEventImplBuffer.writeln('}');
 
       bodyBuffer.writeln('''
 final $eventCompleterName = Completer<bool>();
@@ -296,8 +292,8 @@ expect(eventCalled, isTrue);
 await Future.delayed(const Duration(milliseconds: 500));
 ''');
 
-      String testCase =
-          testCasesContentTemplate.replaceAll('{{TEST_CASE_NAME}}', eventName);
+      String testCase = testCasesContentTemplate.replaceAll(
+          '{{TEST_CASE_NAME}}', '${eventHandlerClazz.name}.$eventName');
       testCase =
           testCase.replaceAll('{{TEST_CASE_BODY}}', bodyBuffer.toString());
 
@@ -372,10 +368,17 @@ await Future.delayed(const Duration(milliseconds: 500));
         final parameterType = getParamType(parameter);
         if (parameterType == 'Uint8List') {
           pb.writeln(
-              '${getParamType(parameter)} ${parameter.name} = ${parameter.primitiveDefualtValue()};');
+              '${getParamType(parameter)} ${parameter.name} = ${defualtValueOfType(parameter.type)};');
         } else {
-          pb.writeln(
-              'const ${getParamType(parameter)} ${parameter.name} = ${parameter.primitiveDefualtValue()};');
+          if (parameterType.startsWith('List') &&
+              parameter.type.typeArguments.isNotEmpty) {
+            final listBuilderBlock =
+                createListBuilderBlockForList(parseResult, parameter);
+            pb.writeln(listBuilderBlock);
+          } else {
+            pb.writeln(
+                '${getParamType(parameter)} ${parameter.name} = ${defualtValueOfType(parameter.type)};');
+          }
         }
       } else {
         createConstructorInitializerForMethodParameter(

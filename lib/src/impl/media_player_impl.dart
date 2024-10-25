@@ -5,7 +5,6 @@ import 'package:agora_rtc_engine/src/agora_media_base.dart';
 import 'package:agora_rtc_engine/src/agora_media_player.dart';
 import 'package:agora_rtc_engine/src/agora_media_player_source.dart';
 import 'package:agora_rtc_engine/src/agora_rtc_engine.dart';
-import 'package:agora_rtc_engine/src/agora_rtc_engine_ext.dart';
 import 'package:agora_rtc_engine/src/binding/agora_media_base_event_impl.dart'
     as media_base_event_binding;
 import 'package:agora_rtc_engine/src/binding/agora_media_player_event_impl.dart'
@@ -162,8 +161,9 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
     await irisMethodChannel.registerEventHandler(
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
-            registerName: 'MediaPlayer_registerPlayerSourceObserver',
-            unregisterName: 'MediaPlayer_unregisterPlayerSourceObserver',
+            registerName: 'MediaPlayer_registerPlayerSourceObserver_15621d7',
+            unregisterName:
+                'MediaPlayer_unregisterPlayerSourceObserver_15621d7',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -178,8 +178,9 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
     await irisMethodChannel.unregisterEventHandler(
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
-            registerName: 'MediaPlayer_registerPlayerSourceObserver',
-            unregisterName: 'MediaPlayer_unregisterPlayerSourceObserver',
+            registerName: 'MediaPlayer_registerPlayerSourceObserver_15621d7',
+            unregisterName:
+                'MediaPlayer_unregisterPlayerSourceObserver_15621d7',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -189,53 +190,19 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
   }
 
   @override
-  Future<void> setPlayerOptionInInt(
-      {required String key, required int value}) async {
-    const apiType = 'MediaPlayer_setPlayerOption';
-    final param = createParams({'key': key, 'value': value});
-    final callApiResult = await irisMethodChannel
-        .invokeMethod(IrisMethodCall(apiType, jsonEncode(param)));
-    if (callApiResult.irisReturnCode < 0) {
-      throw AgoraRtcException(code: callApiResult.irisReturnCode);
-    }
-    final rm = callApiResult.data;
-    final result = rm['result'];
-    if (result < 0) {
-      throw AgoraRtcException(code: result);
-    }
-  }
-
-  @override
-  Future<void> setPlayerOptionInString(
-      {required String key, required String value}) async {
-    const apiType = 'MediaPlayer_setPlayerOption2';
-    final param = createParams({'key': key, 'value': value});
-    final callApiResult = await irisMethodChannel
-        .invokeMethod(IrisMethodCall(apiType, jsonEncode(param)));
-    if (callApiResult.irisReturnCode < 0) {
-      throw AgoraRtcException(code: callApiResult.irisReturnCode);
-    }
-    final rm = callApiResult.data;
-    final result = rm['result'];
-    if (result < 0) {
-      throw AgoraRtcException(code: result);
-    }
-  }
-
-  @override
   void registerAudioFrameObserver(
       {required AudioPcmFrameSink observer,
       RawAudioFrameOpModeType mode =
           RawAudioFrameOpModeType.rawAudioFrameOpModeReadOnly}) async {
     final eventHandlerWrapper =
         AudioPcmFrameSinkWrapper(getMediaPlayerId(), observer);
-    final param = createParams({});
+    final param = createParams({'mode': mode.value()});
 
     await irisMethodChannel.registerEventHandler(
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
-            registerName: 'MediaPlayer_registerAudioFrameObserver',
-            unregisterName: 'MediaPlayer_unregisterAudioFrameObserver',
+            registerName: 'MediaPlayer_registerAudioFrameObserver_a5b510b',
+            unregisterName: 'MediaPlayer_unregisterAudioFrameObserver_89ab9b5',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -249,8 +216,8 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
     await irisMethodChannel.unregisterEventHandler(
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
-            registerName: 'MediaPlayer_registerAudioFrameObserver',
-            unregisterName: 'MediaPlayer_unregisterAudioFrameObserver',
+            registerName: 'MediaPlayer_registerAudioFrameObserver_a5b510b',
+            unregisterName: 'MediaPlayer_unregisterAudioFrameObserver_89ab9b5',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -265,8 +232,8 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
     await irisMethodChannel.registerEventHandler(
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
-            registerName: 'MediaPlayer_registerVideoFrameObserver',
-            unregisterName: 'MediaPlayer_unregisterVideoFrameObserver',
+            registerName: 'MediaPlayer_registerVideoFrameObserver_833bd8d',
+            unregisterName: 'MediaPlayer_unregisterVideoFrameObserver_5165d4c',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -281,8 +248,8 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
     await irisMethodChannel.unregisterEventHandler(
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
-            registerName: 'MediaPlayer_registerVideoFrameObserver',
-            unregisterName: 'MediaPlayer_unregisterVideoFrameObserver',
+            registerName: 'MediaPlayer_registerVideoFrameObserver_833bd8d',
+            unregisterName: 'MediaPlayer_unregisterVideoFrameObserver_5165d4c',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -299,9 +266,9 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
             registerName:
-                'MediaPlayer_registerMediaPlayerAudioSpectrumObserver',
+                'MediaPlayer_registerMediaPlayerAudioSpectrumObserver_226bb48',
             unregisterName:
-                'MediaPlayer_unregisterMediaPlayerAudioSpectrumObserver',
+                'MediaPlayer_unregisterMediaPlayerAudioSpectrumObserver_09064ce',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }
@@ -317,9 +284,9 @@ class MediaPlayerImpl extends agora_media_player_impl_binding.MediaPlayerImpl
         ScopedEvent(
             scopedKey: _mediaPlayerScopedKey,
             registerName:
-                'MediaPlayer_registerMediaPlayerAudioSpectrumObserver',
+                'MediaPlayer_registerMediaPlayerAudioSpectrumObserver_226bb48',
             unregisterName:
-                'MediaPlayer_unregisterMediaPlayerAudioSpectrumObserver',
+                'MediaPlayer_unregisterMediaPlayerAudioSpectrumObserver_09064ce',
             handler: eventHandlerWrapper),
         jsonEncode(param));
   }

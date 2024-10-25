@@ -11,8 +11,8 @@ part of 'agora_rhythm_player.dart';
 AgoraRhythmPlayerConfig _$AgoraRhythmPlayerConfigFromJson(
         Map<String, dynamic> json) =>
     AgoraRhythmPlayerConfig(
-      beatsPerMeasure: json['beatsPerMeasure'] as int?,
-      beatsPerMinute: json['beatsPerMinute'] as int?,
+      beatsPerMeasure: (json['beatsPerMeasure'] as num?)?.toInt(),
+      beatsPerMinute: (json['beatsPerMinute'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$AgoraRhythmPlayerConfigToJson(
@@ -38,10 +38,10 @@ const _$RhythmPlayerStateTypeEnumMap = {
   RhythmPlayerStateType.rhythmPlayerStateFailed: 814,
 };
 
-const _$RhythmPlayerErrorTypeEnumMap = {
-  RhythmPlayerErrorType.rhythmPlayerErrorOk: 0,
-  RhythmPlayerErrorType.rhythmPlayerErrorFailed: 1,
-  RhythmPlayerErrorType.rhythmPlayerErrorCanNotOpen: 801,
-  RhythmPlayerErrorType.rhythmPlayerErrorCanNotPlay: 802,
-  RhythmPlayerErrorType.rhythmPlayerErrorFileOverDurationLimit: 803,
+const _$RhythmPlayerReasonEnumMap = {
+  RhythmPlayerReason.rhythmPlayerReasonOk: 0,
+  RhythmPlayerReason.rhythmPlayerReasonFailed: 1,
+  RhythmPlayerReason.rhythmPlayerReasonCanNotOpen: 801,
+  RhythmPlayerReason.rhythmPlayerReasonCanNotPlay: 802,
+  RhythmPlayerReason.rhythmPlayerReasonFileOverDurationLimit: 803,
 };

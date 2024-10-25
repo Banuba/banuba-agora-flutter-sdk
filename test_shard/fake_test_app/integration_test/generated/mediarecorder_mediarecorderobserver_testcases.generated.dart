@@ -11,15 +11,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iris_tester/iris_tester.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
-void generatedTestCases(IrisTester irisTester) {
+import '../testcases/event_ids_mapping.dart';
+
+void generatedTestCases(ValueGetter<IrisTester> irisTester) {
   testWidgets(
-    'onRecorderStateChanged',
+    'MediaRecorderObserver.onRecorderStateChanged',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
 
       final mediaRecorder = (await rtcEngine.createMediaRecorder(
           RecorderStreamInfo(channelId: 'hello', uid: 0)))!;
@@ -27,7 +30,7 @@ void generatedTestCases(IrisTester irisTester) {
       final onRecorderStateChangedCompleter = Completer<bool>();
       final theMediaRecorderObserver = MediaRecorderObserver(
         onRecorderStateChanged: (String channelId, int uid, RecorderState state,
-            RecorderErrorCode error) {
+            RecorderReasonCode reason) {
           onRecorderStateChangedCompleter.complete(true);
         },
       );
@@ -40,29 +43,27 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const String channelId = "hello";
-        const int uid = 10;
-        const RecorderState state = RecorderState.recorderStateError;
-        const RecorderErrorCode error = RecorderErrorCode.recorderErrorNone;
+        String channelId = "hello";
+        int uid = 5;
+        RecorderState state = RecorderState.recorderStateError;
+        RecorderReasonCode reason = RecorderReasonCode.recorderReasonNone;
 
         final eventJson = {
           'channelId': channelId,
           'uid': uid,
           'state': state.value(),
-          'error': error.value(),
+          'reason': reason.value(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaRecorderObserver_onRecorderStateChanged',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaRecorderObserver_onRecorderStateChanged',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaRecorderObserver_onRecorderStateChanged'] ??
+                [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onRecorderStateChangedCompleter.isCompleted) {
               onRecorderStateChangedCompleter.complete(true);
             }
@@ -84,13 +85,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onRecorderInfoUpdated',
+    'MediaRecorderObserver.onRecorderInfoUpdated',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
 
       final mediaRecorder = (await rtcEngine.createMediaRecorder(
           RecorderStreamInfo(channelId: 'hello', uid: 0)))!;
@@ -110,12 +112,12 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const String channelId = "hello";
-        const int uid = 10;
-        const String infoFileName = "hello";
-        const int infoDurationMs = 10;
-        const int infoFileSize = 10;
-        const RecorderInfo info = RecorderInfo(
+        String channelId = "hello";
+        int uid = 5;
+        String infoFileName = "hello";
+        int infoDurationMs = 5;
+        int infoFileSize = 5;
+        RecorderInfo info = RecorderInfo(
           fileName: infoFileName,
           durationMs: infoDurationMs,
           fileSize: infoFileSize,
@@ -127,17 +129,15 @@ void generatedTestCases(IrisTester irisTester) {
           'info': info.toJson(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaRecorderObserver_onRecorderInfoUpdated',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaRecorderObserver_onRecorderInfoUpdated',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaRecorderObserver_onRecorderInfoUpdated'] ??
+                [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onRecorderInfoUpdatedCompleter.isCompleted) {
               onRecorderInfoUpdatedCompleter.complete(true);
             }

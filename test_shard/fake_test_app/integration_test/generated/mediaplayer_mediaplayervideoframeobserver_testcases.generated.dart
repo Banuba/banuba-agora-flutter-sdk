@@ -11,15 +11,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iris_tester/iris_tester.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
-void generatedTestCases(IrisTester irisTester) {
+import '../testcases/event_ids_mapping.dart';
+
+void generatedTestCases(ValueGetter<IrisTester> irisTester) {
   testWidgets(
-    'onFrame',
+    'MediaPlayerVideoFrameObserver.onFrame',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       MediaPlayerController mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -39,25 +42,26 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const VideoPixelFormat frameType = VideoPixelFormat.videoPixelDefault;
-        const int frameWidth = 10;
-        const int frameHeight = 10;
-        const int frameYStride = 10;
-        const int frameUStride = 10;
-        const int frameVStride = 10;
-        Uint8List frameYBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        Uint8List frameUBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        Uint8List frameVBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        const int frameRotation = 10;
-        const int frameRenderTimeMs = 10;
-        const int frameAvsyncType = 10;
-        Uint8List frameMetadataBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        const int frameMetadataSize = 10;
-        const int frameTextureId = 10;
-        const List<double> frameMatrix = [];
-        Uint8List frameAlphaBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        Uint8List framePixelBuffer = Uint8List.fromList([1, 2, 3, 4, 5]);
-        final VideoFrame frame = VideoFrame(
+        VideoPixelFormat frameType = VideoPixelFormat.videoPixelDefault;
+        VideoFrameMetaInfo? frameMetaInfo = null;
+        int frameWidth = 5;
+        int frameHeight = 5;
+        int frameYStride = 5;
+        int frameUStride = 5;
+        int frameVStride = 5;
+        Uint8List frameYBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        Uint8List frameUBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        Uint8List frameVBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        int frameRotation = 5;
+        int frameRenderTimeMs = 5;
+        int frameAvsyncType = 5;
+        Uint8List frameMetadataBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        int frameMetadataSize = 5;
+        int frameTextureId = 5;
+        List<double> frameMatrix = List.filled(5, 5.0);
+        Uint8List frameAlphaBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        Uint8List framePixelBuffer = Uint8List.fromList([1, 1, 1, 1, 1]);
+        VideoFrame frame = VideoFrame(
           type: frameType,
           width: frameWidth,
           height: frameHeight,
@@ -76,23 +80,21 @@ void generatedTestCases(IrisTester irisTester) {
           matrix: frameMatrix,
           alphaBuffer: frameAlphaBuffer,
           pixelBuffer: framePixelBuffer,
+          metaInfo: frameMetaInfo,
         );
 
         final eventJson = {
           'frame': frame.toJson(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerVideoFrameObserver_onFrame',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerVideoFrameObserver_onFrame',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerVideoFrameObserver_onFrame'] ?? [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onFrameCompleter.isCompleted) {
               onFrameCompleter.complete(true);
             }

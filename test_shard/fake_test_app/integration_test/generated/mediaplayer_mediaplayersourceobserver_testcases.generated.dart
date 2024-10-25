@@ -11,15 +11,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iris_tester/iris_tester.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
-void generatedTestCases(IrisTester irisTester) {
+import '../testcases/event_ids_mapping.dart';
+
+void generatedTestCases(ValueGetter<IrisTester> irisTester) {
   testWidgets(
-    'onPlayerSourceStateChanged',
+    'MediaPlayerSourceObserver.onPlayerSourceStateChanged',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -27,7 +30,7 @@ void generatedTestCases(IrisTester irisTester) {
       final onPlayerSourceStateChangedCompleter = Completer<bool>();
       final theMediaPlayerSourceObserver = MediaPlayerSourceObserver(
         onPlayerSourceStateChanged:
-            (MediaPlayerState state, MediaPlayerError ec) {
+            (MediaPlayerState state, MediaPlayerReason reason) {
           onPlayerSourceStateChangedCompleter.complete(true);
         },
       );
@@ -40,26 +43,23 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const MediaPlayerState state = MediaPlayerState.playerStateIdle;
-        const MediaPlayerError ec = MediaPlayerError.playerErrorNone;
+        MediaPlayerState state = MediaPlayerState.playerStateIdle;
+        MediaPlayerReason reason = MediaPlayerReason.playerReasonNone;
 
         final eventJson = {
           'state': state.value(),
-          'ec': ec.value(),
+          'reason': reason.value(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayerSourceStateChanged',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayerSourceStateChanged',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds = eventIdsMapping[
+                'MediaPlayerSourceObserver_onPlayerSourceStateChanged'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPlayerSourceStateChangedCompleter.isCompleted) {
               onPlayerSourceStateChangedCompleter.complete(true);
             }
@@ -84,20 +84,21 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onPositionChanged',
+    'MediaPlayerSourceObserver.onPositionChanged',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
 
       final onPositionChangedCompleter = Completer<bool>();
       final theMediaPlayerSourceObserver = MediaPlayerSourceObserver(
-        onPositionChanged: (int positionMs) {
+        onPositionChanged: (int positionMs, int timestampMs) {
           onPositionChangedCompleter.complete(true);
         },
       );
@@ -110,23 +111,23 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const int positionMs = 10;
+        int positionMs = 5;
+        int timestampMs = 5;
 
         final eventJson = {
           'positionMs': positionMs,
+          'timestampMs': timestampMs,
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onPositionChanged',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPositionChanged',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onPositionChanged'] ??
+                [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPositionChangedCompleter.isCompleted) {
               onPositionChangedCompleter.complete(true);
             }
@@ -151,13 +152,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onPlayerEvent',
+    'MediaPlayerSourceObserver.onPlayerEvent',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -178,10 +180,9 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const MediaPlayerEvent eventCode =
-            MediaPlayerEvent.playerEventSeekBegin;
-        const int elapsedTime = 10;
-        const String message = "hello";
+        MediaPlayerEvent eventCode = MediaPlayerEvent.playerEventSeekBegin;
+        int elapsedTime = 5;
+        String message = "hello";
 
         final eventJson = {
           'eventCode': eventCode.value(),
@@ -189,17 +190,14 @@ void generatedTestCases(IrisTester irisTester) {
           'message': message,
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onPlayerEvent',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayerEvent',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onPlayerEvent'] ?? [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPlayerEventCompleter.isCompleted) {
               onPlayerEventCompleter.complete(true);
             }
@@ -224,13 +222,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onMetaData',
+    'MediaPlayerSourceObserver.onMetaData',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -250,25 +249,22 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        Uint8List data = Uint8List.fromList([1, 2, 3, 4, 5]);
-        const int length = 10;
+        Uint8List data = Uint8List.fromList([1, 1, 1, 1, 1]);
+        int length = 5;
 
         final eventJson = {
           'data': data.toList(),
           'length': length,
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onMetaData',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onMetaData',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onMetaData'] ?? [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onMetaDataCompleter.isCompleted) {
               onMetaDataCompleter.complete(true);
             }
@@ -293,13 +289,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onPlayBufferUpdated',
+    'MediaPlayerSourceObserver.onPlayBufferUpdated',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -319,23 +316,21 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const int playCachedBuffer = 10;
+        int playCachedBuffer = 5;
 
         final eventJson = {
           'playCachedBuffer': playCachedBuffer,
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onPlayBufferUpdated',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayBufferUpdated',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onPlayBufferUpdated'] ??
+                [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPlayBufferUpdatedCompleter.isCompleted) {
               onPlayBufferUpdatedCompleter.complete(true);
             }
@@ -360,13 +355,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onPreloadEvent',
+    'MediaPlayerSourceObserver.onPreloadEvent',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -386,26 +382,22 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const String src = "hello";
-        const PlayerPreloadEvent event =
-            PlayerPreloadEvent.playerPreloadEventBegin;
+        String src = "hello";
+        PlayerPreloadEvent event = PlayerPreloadEvent.playerPreloadEventBegin;
 
         final eventJson = {
           'src': src,
           'event': event.value(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onPreloadEvent',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPreloadEvent',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onPreloadEvent'] ?? [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPreloadEventCompleter.isCompleted) {
               onPreloadEventCompleter.complete(true);
             }
@@ -430,13 +422,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onCompleted',
+    'MediaPlayerSourceObserver.onCompleted',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -458,17 +451,14 @@ void generatedTestCases(IrisTester irisTester) {
       {
         final eventJson = {};
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onCompleted',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onCompleted',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onCompleted'] ?? [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onCompletedCompleter.isCompleted) {
               onCompletedCompleter.complete(true);
             }
@@ -493,13 +483,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onAgoraCDNTokenWillExpire',
+    'MediaPlayerSourceObserver.onAgoraCDNTokenWillExpire',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -521,18 +512,15 @@ void generatedTestCases(IrisTester irisTester) {
       {
         final eventJson = {};
 
-        if (!kIsWeb) {
-          irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onAgoraCDNTokenWillExpire',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onAgoraCDNTokenWillExpire',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds = eventIdsMapping[
+                'MediaPlayerSourceObserver_onAgoraCDNTokenWillExpire'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onAgoraCDNTokenWillExpireCompleter.isCompleted) {
               onAgoraCDNTokenWillExpireCompleter.complete(true);
             }
@@ -557,13 +545,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onPlayerSrcInfoChanged',
+    'MediaPlayerSourceObserver.onPlayerSrcInfoChanged',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -583,15 +572,15 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const int fromBitrateInKbps = 10;
-        const String fromName = "hello";
-        const SrcInfo from = SrcInfo(
+        int fromBitrateInKbps = 5;
+        String fromName = "hello";
+        SrcInfo from = SrcInfo(
           bitrateInKbps: fromBitrateInKbps,
           name: fromName,
         );
-        const int toBitrateInKbps = 10;
-        const String toName = "hello";
-        const SrcInfo to = SrcInfo(
+        int toBitrateInKbps = 5;
+        String toName = "hello";
+        SrcInfo to = SrcInfo(
           bitrateInKbps: toBitrateInKbps,
           name: toName,
         );
@@ -601,18 +590,15 @@ void generatedTestCases(IrisTester irisTester) {
           'to': to.toJson(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayerSrcInfoChanged',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayerSrcInfoChanged',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds = eventIdsMapping[
+                'MediaPlayerSourceObserver_onPlayerSrcInfoChanged'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPlayerSrcInfoChangedCompleter.isCompleted) {
               onPlayerSrcInfoChangedCompleter.complete(true);
             }
@@ -637,13 +623,14 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onPlayerInfoUpdated',
+    'MediaPlayerSourceObserver.onPlayerInfoUpdated',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -663,37 +650,36 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const int cacheStatisticsFileSize = 10;
-        const int cacheStatisticsCacheSize = 10;
-        const int cacheStatisticsDownloadSize = 10;
-        const CacheStatistics infoCacheStatistics = CacheStatistics(
-          fileSize: cacheStatisticsFileSize,
-          cacheSize: cacheStatisticsCacheSize,
-          downloadSize: cacheStatisticsDownloadSize,
-        );
-        const String infoPlayerId = "hello";
-        const String infoDeviceId = "hello";
-        const PlayerUpdatedInfo info = PlayerUpdatedInfo(
-          playerId: infoPlayerId,
+        String infoInternalPlayerUuid = "hello";
+        String infoDeviceId = "hello";
+        int infoVideoHeight = 5;
+        int infoVideoWidth = 5;
+        int infoAudioSampleRate = 5;
+        int infoAudioChannels = 5;
+        int infoAudioBitsPerSample = 5;
+        PlayerUpdatedInfo info = PlayerUpdatedInfo(
+          internalPlayerUuid: infoInternalPlayerUuid,
           deviceId: infoDeviceId,
-          cacheStatistics: infoCacheStatistics,
+          videoHeight: infoVideoHeight,
+          videoWidth: infoVideoWidth,
+          audioSampleRate: infoAudioSampleRate,
+          audioChannels: infoAudioChannels,
+          audioBitsPerSample: infoAudioBitsPerSample,
         );
 
         final eventJson = {
           'info': info.toJson(),
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent('MediaPlayerSourceObserver_onPlayerInfoUpdated',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onPlayerInfoUpdated',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onPlayerInfoUpdated'] ??
+                [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onPlayerInfoUpdatedCompleter.isCompleted) {
               onPlayerInfoUpdatedCompleter.complete(true);
             }
@@ -718,13 +704,162 @@ void generatedTestCases(IrisTester irisTester) {
   );
 
   testWidgets(
-    'onAudioVolumeIndication',
+    'MediaPlayerSourceObserver.onPlayerCacheStats',
     (WidgetTester tester) async {
       RtcEngine rtcEngine = createAgoraRtcEngine();
       await rtcEngine.initialize(RtcEngineContext(
         appId: 'app_id',
         areaCode: AreaCode.areaCodeGlob.value(),
       ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
+      final mediaPlayerController = MediaPlayerController(
+          rtcEngine: rtcEngine, canvas: const VideoCanvas());
+      await mediaPlayerController.initialize();
+
+      final onPlayerCacheStatsCompleter = Completer<bool>();
+      final theMediaPlayerSourceObserver = MediaPlayerSourceObserver(
+        onPlayerCacheStats: (CacheStatistics stats) {
+          onPlayerCacheStatsCompleter.complete(true);
+        },
+      );
+
+      mediaPlayerController.registerPlayerSourceObserver(
+        theMediaPlayerSourceObserver,
+      );
+
+// Delay 500 milliseconds to ensure the registerPlayerSourceObserver call completed.
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      {
+        int statsFileSize = 5;
+        int statsCacheSize = 5;
+        int statsDownloadSize = 5;
+        CacheStatistics stats = CacheStatistics(
+          fileSize: statsFileSize,
+          cacheSize: statsCacheSize,
+          downloadSize: statsDownloadSize,
+        );
+
+        final eventJson = {
+          'stats': stats.toJson(),
+        };
+
+        final eventIds =
+            eventIdsMapping['MediaPlayerSourceObserver_onPlayerCacheStats'] ??
+                [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
+          await Future.delayed(const Duration(milliseconds: 200));
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
+            if (!onPlayerCacheStatsCompleter.isCompleted) {
+              onPlayerCacheStatsCompleter.complete(true);
+            }
+          }
+        }
+      }
+
+      final eventCalled = await onPlayerCacheStatsCompleter.future;
+      expect(eventCalled, isTrue);
+
+      {
+        mediaPlayerController.unregisterPlayerSourceObserver(
+          theMediaPlayerSourceObserver,
+        );
+      }
+// Delay 500 milliseconds to ensure the unregisterPlayerSourceObserver call completed.
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      await rtcEngine.release();
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
+
+  testWidgets(
+    'MediaPlayerSourceObserver.onPlayerPlaybackStats',
+    (WidgetTester tester) async {
+      RtcEngine rtcEngine = createAgoraRtcEngine();
+      await rtcEngine.initialize(RtcEngineContext(
+        appId: 'app_id',
+        areaCode: AreaCode.areaCodeGlob.value(),
+      ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
+      final mediaPlayerController = MediaPlayerController(
+          rtcEngine: rtcEngine, canvas: const VideoCanvas());
+      await mediaPlayerController.initialize();
+
+      final onPlayerPlaybackStatsCompleter = Completer<bool>();
+      final theMediaPlayerSourceObserver = MediaPlayerSourceObserver(
+        onPlayerPlaybackStats: (PlayerPlaybackStats stats) {
+          onPlayerPlaybackStatsCompleter.complete(true);
+        },
+      );
+
+      mediaPlayerController.registerPlayerSourceObserver(
+        theMediaPlayerSourceObserver,
+      );
+
+// Delay 500 milliseconds to ensure the registerPlayerSourceObserver call completed.
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      {
+        int statsVideoFps = 5;
+        int statsVideoBitrateInKbps = 5;
+        int statsAudioBitrateInKbps = 5;
+        int statsTotalBitrateInKbps = 5;
+        PlayerPlaybackStats stats = PlayerPlaybackStats(
+          videoFps: statsVideoFps,
+          videoBitrateInKbps: statsVideoBitrateInKbps,
+          audioBitrateInKbps: statsAudioBitrateInKbps,
+          totalBitrateInKbps: statsTotalBitrateInKbps,
+        );
+
+        final eventJson = {
+          'stats': stats.toJson(),
+        };
+
+        final eventIds = eventIdsMapping[
+                'MediaPlayerSourceObserver_onPlayerPlaybackStats'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
+          await Future.delayed(const Duration(milliseconds: 200));
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
+            if (!onPlayerPlaybackStatsCompleter.isCompleted) {
+              onPlayerPlaybackStatsCompleter.complete(true);
+            }
+          }
+        }
+      }
+
+      final eventCalled = await onPlayerPlaybackStatsCompleter.future;
+      expect(eventCalled, isTrue);
+
+      {
+        mediaPlayerController.unregisterPlayerSourceObserver(
+          theMediaPlayerSourceObserver,
+        );
+      }
+// Delay 500 milliseconds to ensure the unregisterPlayerSourceObserver call completed.
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      await rtcEngine.release();
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
+
+  testWidgets(
+    'MediaPlayerSourceObserver.onAudioVolumeIndication',
+    (WidgetTester tester) async {
+      RtcEngine rtcEngine = createAgoraRtcEngine();
+      await rtcEngine.initialize(RtcEngineContext(
+        appId: 'app_id',
+        areaCode: AreaCode.areaCodeGlob.value(),
+      ));
+      await rtcEngine.setParameters('{"rtc.enable_debug_log": true}');
       final mediaPlayerController = MediaPlayerController(
           rtcEngine: rtcEngine, canvas: const VideoCanvas());
       await mediaPlayerController.initialize();
@@ -744,24 +879,21 @@ void generatedTestCases(IrisTester irisTester) {
       await Future.delayed(const Duration(milliseconds: 500));
 
       {
-        const int volume = 10;
+        int volume = 5;
 
         final eventJson = {
           'volume': volume,
         };
 
-        if (!kIsWeb) {
-          irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onAudioVolumeIndication',
-              params: eventJson);
-        } else {
-          final ret = irisTester.fireEvent(
-              'MediaPlayerSourceObserver_onAudioVolumeIndication',
-              params: eventJson);
-// Delay 200 milliseconds to ensure the callback is called.
+        final eventIds = eventIdsMapping[
+                'MediaPlayerSourceObserver_onAudioVolumeIndication'] ??
+            [];
+        for (final event in eventIds) {
+          final ret = irisTester().fireEvent(event, params: eventJson);
+          // Delay 200 milliseconds to ensure the callback is called.
           await Future.delayed(const Duration(milliseconds: 200));
-// TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
-          if (ret) {
+          // TODO(littlegnal): Most of callbacks on web are not implemented, we're temporarily skip these callbacks at this time.
+          if (kIsWeb && ret) {
             if (!onAudioVolumeIndicationCompleter.isCompleted) {
               onAudioVolumeIndicationCompleter.complete(true);
             }

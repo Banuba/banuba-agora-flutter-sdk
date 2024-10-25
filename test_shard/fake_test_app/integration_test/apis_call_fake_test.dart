@@ -10,8 +10,7 @@ import 'testcases/localspatialaudioengine_testcases.dart'
 import 'generated/mediaengine_fake_test.generated.dart' as mediaengine;
 import 'generated/mediaplayer_fake_test.generated.dart' as mediaplayer;
 import 'generated/mediarecorder_fake_test.generated.dart' as mediarecorder;
-import 'generated/musiccontentcenter_fake_test.generated.dart'
-    as musiccontentcenter;
+import 'testcases/musiccontentcenter_testcases.dart' as musiccontentcenter;
 import 'testcases/rtcengine_debug_testcases.dart' as rtcengine_debug;
 import 'testcases/rtcengine_testcases.dart' as rtcengine;
 import 'testcases/rtcengineex_testcases.dart' as rtcengineex;
@@ -37,26 +36,29 @@ class TestInitilizationArgProvider implements InitilizationArgProvider {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  IrisTester irisTester = createIrisTester();
+  IrisTester? irisTester;
 
   setUp(() {
-    irisTester.initialize();
+    irisTester = createIrisTester();
+    irisTester!.initialize();
     if (kIsWeb) {
       setMockRtcEngineProvider(
-          TestInitilizationArgProvider(irisTester.getTesterArgs()));
+          TestInitilizationArgProvider(irisTester!.getTesterArgs()));
     } else {
       // On IO, the function return from the `irisTester.getTesterArgs()` capture
       // the `Pointer` from `IrisTester`, which is invalid to pass to the `Isolate`,
       // so directly pass the `ObjectIrisHandle` as value to the `setMockRtcEngineProvider`
-      final value = irisTester.getTesterArgs()[0](const IrisApiEngineHandle(0));
+      final value =
+          irisTester!.getTesterArgs()[0](const IrisApiEngineHandle(0));
       setMockRtcEngineProvider(
           TestInitilizationArgProvider.fromValue(ObjectIrisHandle(value)));
     }
   });
 
   tearDown(() {
-    irisTester.dispose();
     setMockRtcEngineProvider(null);
+    irisTester!.dispose();
+    irisTester = null;
   });
 
   if (!kIsWeb) {
@@ -64,7 +66,7 @@ void main() {
     localspatialaudioengine.testCases();
     mediaplayer.mediaPlayerControllerSmokeTestCases();
     mediarecorder.mediaRecorderSmokeTestCases();
-    musiccontentcenter.musicContentCenterSmokeTestCases();
+    musiccontentcenter.testCases();
     rtcengine_debug.testCases();
   }
 

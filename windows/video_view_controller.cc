@@ -41,6 +41,7 @@ VideoViewController::VideoViewController(
 
 VideoViewController::~VideoViewController()
 {
+  Dispose();
 }
 
 void VideoViewController::HandleMethodCall(
@@ -126,6 +127,11 @@ void VideoViewController::HandleMethodCall(
 
     result->Success(flutter::EncodableValue(true));
   }
+  else if (method.compare("dispose") == 0)
+  {
+    Dispose();
+    result->Success(flutter::EncodableValue(true));
+  }
   else if (method.compare("updateTextureRenderData") == 0)
   {
   }
@@ -149,15 +155,16 @@ int64_t VideoViewController::CreateTextureRender(
     unsigned int videoViewSetupMode)
 {
   agora::iris::IrisRtcRendering *iris_rtc_rendering = reinterpret_cast<agora::iris::IrisRtcRendering *>(irisRtcRenderingHandle);
-  std::unique_ptr<TextureRender> textureRender = std::make_unique<TextureRender>(
+  auto textureRender = new TextureRender(
       messenger_,
       texture_registrar_,
       iris_rtc_rendering);
+
   int64_t texture_id = textureRender->texture_id();
 
-  textureRender.get()->UpdateData(uid, channelId, videoSourceType, videoViewSetupMode);
+  textureRender->UpdateData(uid, channelId, videoSourceType, videoViewSetupMode);
 
-  renderers_[texture_id] = std::move(textureRender);
+  renderers_[texture_id] = textureRender;
   return texture_id;
 }
 
@@ -171,4 +178,13 @@ bool VideoViewController::DestroyTextureRender(int64_t textureId)
     return true;
   }
   return false;
+}
+
+void VideoViewController::Dispose()
+{
+  for (const auto &entry : renderers_)
+  {
+    entry.second->Dispose();
+  }
+  renderers_.clear();
 }

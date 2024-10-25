@@ -1,5 +1,39 @@
 # Changelog
 
+## [6.3.2](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/compare/6.3.1...6.3.2) (2024-06-06)
+
+
+### Features
+
+* upgrade native sdk 4.3.2 ([#1795](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1795)) ([e937989](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/e9379891d4d54f8f56cd19af7ad1ebd0ddc0c8f1))
+
+## [6.3.1](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/compare/6.3.0...6.3.1) (2024-05-09)
+
+
+### Features
+
+* Upgrade native sdk 4.3.1 ([#1611](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1611)) ([18f1a56](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/18f1a56ad19f761e249656e7b680cb2e174dab48))
+
+
+### Bug Fixes
+
+* AgoraVideoView crash when dispose after RtcEngine.release ([#1585](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1585)) ([cd33120](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/cd33120b609c9fee410482f5410657579857c984))
+* AgoraVideoView takes over the whole browser window ([#1717](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1717)) ([0052cc7](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/0052cc78446244cfaa4cfa5fff53515256704abf)), closes [/github.com/flutter/flutter/issues/143922#issuecomment-1960133128](https://github.com/AgoraIO-Extensions//github.com/flutter/flutter/issues/143922/issues/issuecomment-1960133128)
+* Prevent multiple initializations of internal resources when `RtcEngine.initialize` is called simultaneously ([#1712](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1712)) ([462cfc3](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/462cfc3ebddeebe83143f341eb6ec8185a9e5b25))
+
+## [6.3.0](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/compare/6.2.6...6.3.0) (2024-02-28)
+
+
+### Features
+
+* Upgrade native sdk 4.3.0 ([#1462](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1462)) ([499d68c](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/499d68cbb7678296a1d59adc4192606c55f05be4))
+
+
+### Bug Fixes
+
+* [texture rendering] Fix texture id lost when widget is updated ([#1543](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1543)) ([f72552d](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/f72552dafc19553ff1b571d960aa2ddda2a3fd96))
+* Fix MediaEngineImpl.unregisterAudioFrameObserver not unregister eventhandler internally ([#1495](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/issues/1495)) ([7edcd59](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/commit/7edcd59589c1772dce6949ed4815eda41f0de997))
+
 ## [6.2.6](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/compare/6.2.4...6.2.6) (2023-11-21)
 
 

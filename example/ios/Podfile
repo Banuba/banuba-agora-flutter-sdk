@@ -33,8 +33,8 @@ target 'Runner' do
   
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  pod 'BanubaSdk', '1.9.0', :source => 'https://github.com/sdk-banuba/banuba-sdk-podspecs.git'
-  pod 'BanubaFiltersAgoraExtension', '2.4.1', :source => 'https://github.com/sdk-banuba/banuba-sdk-podspecs.git'
+  pod 'BanubaSdk', '1.15.0', :source => 'https://github.com/sdk-banuba/banuba-sdk-podspecs.git'
+  pod 'BanubaFiltersAgoraExtension', '2.5.0', :source => 'https://github.com/sdk-banuba/banuba-sdk-podspecs.git'
 
   target 'ScreenSharing' do
     use_frameworks!

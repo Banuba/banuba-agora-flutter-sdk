@@ -22,6 +22,7 @@ class ScreenSharing extends StatefulWidget {
 class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
   late final RtcEngineEx _engine;
   bool _isReadyPreview = false;
+  bool _isStartedPreview = false;
   String channelId = config.channelId;
   bool isJoined = false;
   late TextEditingController _controller;
@@ -64,7 +65,7 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
         isJoined = false;
       });
     }, onLocalVideoStateChanged: (VideoSourceType source,
-            LocalVideoStreamState state, LocalVideoStreamError error) {
+            LocalVideoStreamState state, LocalVideoStreamReason error) {
       logSink.log(
           '[onLocalVideoStateChanged] source: $source, state: $state, error: $error');
       if (!(source == VideoSourceType.videoSourceScreen ||
@@ -99,8 +100,9 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
     _engine.registerEventHandler(_rtcEngineEventHandler);
 
     await _engine.enableVideo();
-    await _engine.startPreview();
     await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    await _engine
+        .setScreenCaptureScenario(ScreenScenarioType.screenScenarioGaming);
 
     setState(() {
       _isReadyPreview = true;
@@ -115,6 +117,8 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
           connection:
               RtcConnection(channelId: _controller.text, localUid: localUid),
           options: const ChannelMediaOptions(
+            autoSubscribeVideo: true,
+            autoSubscribeAudio: true,
             publishCameraTrack: true,
             publishMicrophoneTrack: true,
             clientRoleType: ClientRoleType.clientRoleBroadcaster,
@@ -128,8 +132,8 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
           connection: RtcConnection(
               channelId: _controller.text, localUid: shareShareUid),
           options: const ChannelMediaOptions(
-            autoSubscribeVideo: true,
-            autoSubscribeAudio: true,
+            autoSubscribeVideo: false,
+            autoSubscribeAudio: false,
             publishScreenTrack: true,
             publishSecondaryScreenTrack: true,
             publishCameraTrack: false,
@@ -168,7 +172,11 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
   Widget build(BuildContext context) {
     return ExampleActionsWidget(
       displayContentBuilder: (context, isLayoutHorizontal) {
-        if (!_isReadyPreview) return Container();
+        if (!_isStartedPreview) {
+          return const Center(
+            child: Text('Press the "Start Preview" button to preview'),
+          );
+        }
         final children = <Widget>[
           Expanded(
             flex: 1,
@@ -194,6 +202,7 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
                       canvas: const VideoCanvas(
                         uid: 0,
                         sourceType: VideoSourceType.videoSourceScreen,
+                        renderMode: RenderModeType.renderModeFit,
                       ),
                     ))
                   : Container(
@@ -270,6 +279,35 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
                   bitrate: bitrate,
                 ));
               },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_isStartedPreview) {
+                        _engine.stopPreview();
+                        _engine.stopPreview(
+                            sourceType: VideoSourceType.videoSourceScreen);
+                      } else {
+                        _engine.startPreview();
+                        _engine.startPreview(
+                            sourceType: VideoSourceType.videoSourceScreen);
+                      }
+
+                      setState(() {
+                        _isStartedPreview = !_isStartedPreview;
+                      });
+                    },
+                    child:
+                        Text('${_isStartedPreview ? 'Stop' : 'Start'} Preview'),
+                  ),
+                )
+              ],
             ),
             const SizedBox(
               height: 20,
@@ -383,7 +421,6 @@ class _ScreenShareWebState extends State<ScreenShareWeb>
 
     await rtcEngine.startScreenCapture(
         const ScreenCaptureParameters2(captureAudio: true, captureVideo: true));
-    await rtcEngine.startPreview(sourceType: VideoSourceType.videoSourceScreen);
     onStartScreenShared();
   }
 
@@ -456,7 +493,6 @@ class _ScreenShareMobileState extends State<ScreenShareMobile>
 
     await rtcEngine.startScreenCapture(
         const ScreenCaptureParameters2(captureAudio: true, captureVideo: true));
-    await rtcEngine.startPreview(sourceType: VideoSourceType.videoSourceScreen);
     _showRPSystemBroadcastPickerViewIfNeed();
     onStartScreenShared();
   }
@@ -501,6 +537,8 @@ class _ScreenShareDesktopState extends State<ScreenShareDesktop>
     implements ScreenShareInterface {
   List<ScreenCaptureSourceInfo> _screenCaptureSourceInfos = [];
   late ScreenCaptureSourceInfo _selectedScreenCaptureSourceInfo;
+
+  late final TextEditingController _screenShareFrameRateController;
 
   @override
   bool get isScreenShared => widget.isScreenShared;
@@ -586,6 +624,8 @@ class _ScreenShareDesktopState extends State<ScreenShareDesktop>
   void initState() {
     super.initState();
 
+    _screenShareFrameRateController = TextEditingController(text: '30');
+
     _initScreenCaptureSourceInfos();
   }
 
@@ -596,6 +636,14 @@ class _ScreenShareDesktopState extends State<ScreenShareDesktop>
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        TextField(
+          controller: _screenShareFrameRateController,
+          decoration:
+              const InputDecoration(hintText: 'Screen Sharing frame rate'),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
         _createDropdownButton(),
         if (_screenCaptureSourceInfos.isNotEmpty)
           Row(
@@ -626,18 +674,18 @@ class _ScreenShareDesktopState extends State<ScreenShareDesktop>
       await rtcEngine.startScreenCaptureByDisplayId(
           displayId: sourceId!,
           regionRect: const Rectangle(x: 0, y: 0, width: 0, height: 0),
-          captureParams: const ScreenCaptureParameters(
+          captureParams: ScreenCaptureParameters(
             captureMouseCursor: true,
-            frameRate: 30,
+            frameRate: int.parse(_screenShareFrameRateController.text),
           ));
     } else if (_selectedScreenCaptureSourceInfo.type ==
         ScreenCaptureSourceType.screencapturesourcetypeWindow) {
       await rtcEngine.startScreenCaptureByWindowId(
         windowId: sourceId!,
         regionRect: const Rectangle(x: 0, y: 0, width: 0, height: 0),
-        captureParams: const ScreenCaptureParameters(
+        captureParams: ScreenCaptureParameters(
           captureMouseCursor: true,
-          frameRate: 30,
+          frameRate: int.parse(_screenShareFrameRateController.text),
         ),
       );
     }
