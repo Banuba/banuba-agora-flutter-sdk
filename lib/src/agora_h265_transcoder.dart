@@ -1,4 +1,5 @@
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
+import '/src/_serializable.dart';
+import '/src/binding_forward_export.dart';
 part 'agora_h265_transcoder.g.dart';
 
 /// @nodoc

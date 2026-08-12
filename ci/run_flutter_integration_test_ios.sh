@@ -1,30 +1,41 @@
 #!/usr/bin/env bash
 
 set -e
+set -o pipefail
 set -x
 
 MY_PATH=$(dirname "$0")
-
-DOWNLOAD_IRIS_DEBUGGER=${1:-1}
-
-if [[ ${DOWNLOAD_IRIS_DEBUGGER} == 1 ]];then
-    source ${MY_PATH}/../scripts/artifacts_version.sh
-
-    bash ${MY_PATH}/../scripts/download_unzip_iris_cdn_artifacts.sh ${IRIS_CDN_URL_IOS} "iOS"
-fi
-
-pushd ${MY_PATH}/../test_shard/fake_test_app
-
-flutter packages get
-
-flutter test integration_test
-
-popd
 
 pushd ${MY_PATH}/../test_shard/integration_test_app
 
 flutter packages get
 
-flutter test integration_test --dart-define=TEST_APP_ID="${TEST_APP_ID}"
+MAX_ATTEMPTS="${IOS_TEST_MAX_ATTEMPTS:-1}"
+
+while IFS= read -r filename; do
+    for ((attempt = 1; attempt <= MAX_ATTEMPTS; attempt++)); do
+        echo "Running iOS integration test: ${filename} (attempt ${attempt}/${MAX_ATTEMPTS})"
+        ATTEMPT_LOG=$(mktemp "${TMPDIR:-/tmp}/agora-ios-integration-test.XXXXXX")
+        if flutter test "${filename}" --dart-define=TEST_APP_ID="${TEST_APP_ID}" --verbose 2>&1 | tee "${ATTEMPT_LOG}"; then
+            rm -f "${ATTEMPT_LOG}"
+            break
+        fi
+
+        if ! grep -Fq "Error waiting for a debug connection: The log reader failed unexpectedly" "${ATTEMPT_LOG}"; then
+            rm -f "${ATTEMPT_LOG}"
+            echo "iOS integration test failed with a non-retryable error: ${filename}" >&2
+            exit 1
+        fi
+        rm -f "${ATTEMPT_LOG}"
+
+        if ((attempt == MAX_ATTEMPTS)); then
+            echo "iOS integration test failed after ${MAX_ATTEMPTS} attempts: ${filename}" >&2
+            exit 1
+        fi
+
+        echo "Retrying after Flutter failed to discover the iOS VM Service..."
+        sleep 5
+    done
+done < <(find integration_test -maxdepth 1 -type f -name '*.dart' ! -name '*.generated.dart' | sort)
 
 popd

@@ -93,6 +93,18 @@ Map<String, dynamic> _$MediaPlayerGetPublishSignalVolumeJsonToJson(
       'volume': instance.volume,
     };
 
+MediaPlayerGetAudioBufferDelayJson _$MediaPlayerGetAudioBufferDelayJsonFromJson(
+        Map<String, dynamic> json) =>
+    MediaPlayerGetAudioBufferDelayJson(
+      (json['delayMs'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$MediaPlayerGetAudioBufferDelayJsonToJson(
+        MediaPlayerGetAudioBufferDelayJson instance) =>
+    <String, dynamic>{
+      'delayMs': instance.delayMs,
+    };
+
 MediaPlayerCacheManagerGetCacheDirJson
     _$MediaPlayerCacheManagerGetCacheDirJsonFromJson(
             Map<String, dynamic> json) =>
@@ -246,6 +258,33 @@ Map<String, dynamic> _$RtcEngineQueryCodecCapabilityJsonToJson(
       'codecInfo': instance.codecInfo.map((e) => e.toJson()).toList(),
     };
 
+RtcEngineGetFaceShapeBeautyOptionsJson
+    _$RtcEngineGetFaceShapeBeautyOptionsJsonFromJson(
+            Map<String, dynamic> json) =>
+        RtcEngineGetFaceShapeBeautyOptionsJson(
+          FaceShapeBeautyOptions.fromJson(
+              json['options'] as Map<String, dynamic>),
+        );
+
+Map<String, dynamic> _$RtcEngineGetFaceShapeBeautyOptionsJsonToJson(
+        RtcEngineGetFaceShapeBeautyOptionsJson instance) =>
+    <String, dynamic>{
+      'options': instance.options.toJson(),
+    };
+
+RtcEngineGetFaceShapeAreaOptionsJson
+    _$RtcEngineGetFaceShapeAreaOptionsJsonFromJson(Map<String, dynamic> json) =>
+        RtcEngineGetFaceShapeAreaOptionsJson(
+          FaceShapeAreaOptions.fromJson(
+              json['options'] as Map<String, dynamic>),
+        );
+
+Map<String, dynamic> _$RtcEngineGetFaceShapeAreaOptionsJsonToJson(
+        RtcEngineGetFaceShapeAreaOptionsJson instance) =>
+    <String, dynamic>{
+      'options': instance.options.toJson(),
+    };
+
 RtcEngineUploadLogFileJson _$RtcEngineUploadLogFileJsonFromJson(
         Map<String, dynamic> json) =>
     RtcEngineUploadLogFileJson(
@@ -346,6 +385,24 @@ Map<String, dynamic> _$RtcEngineGetUserInfoByUidJsonToJson(
     <String, dynamic>{
       'userInfo': instance.userInfo.toJson(),
     };
+
+RtcEngineQueryHDRCapabilityJson _$RtcEngineQueryHDRCapabilityJsonFromJson(
+        Map<String, dynamic> json) =>
+    RtcEngineQueryHDRCapabilityJson(
+      $enumDecode(_$HdrCapabilityEnumMap, json['capability']),
+    );
+
+Map<String, dynamic> _$RtcEngineQueryHDRCapabilityJsonToJson(
+        RtcEngineQueryHDRCapabilityJson instance) =>
+    <String, dynamic>{
+      'capability': _$HdrCapabilityEnumMap[instance.capability]!,
+    };
+
+const _$HdrCapabilityEnumMap = {
+  HdrCapability.hdrCapabilityUnknown: -1,
+  HdrCapability.hdrCapabilityUnsupported: 0,
+  HdrCapability.hdrCapabilitySupported: 1,
+};
 
 RtcEngineExCreateDataStreamExJson _$RtcEngineExCreateDataStreamExJsonFromJson(
         Map<String, dynamic> json) =>

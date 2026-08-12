@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:agora_rtc_engine/src/impl/agora_rtc_engine_impl.dart';
-import 'package:agora_rtc_engine/src/impl/video_view_controller_impl.dart';
+import '/agora_rtc_engine.dart';
+import '/src/impl/agora_rtc_engine_impl.dart';
+import '/src/impl/video_view_controller_impl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
@@ -33,7 +33,11 @@ abstract class GlobalVideoViewControllerPlatfrom {
   /// Call `IrisVideoFrameBufferManager.DisableVideoFrameBuffer` in the native side
   Future<void> destroyTextureRender(int textureId) => SynchronousFuture(null);
 
-  /// Decrease the ref count of the native view(`UIView` in iOS) of the `platformViewId`.
+  /// Increase the ref count of the native view(`UIView` in iOS, `SurfaceView` or `TextureView` in Android) of the `platformViewId`.
+  Future<void> addPlatformRenderRef(int platformViewId) =>
+      SynchronousFuture(null);
+
+  /// Decrease the ref count of the native view(`UIView` in iOS, `SurfaceView` or `TextureView` in Android) of the `platformViewId`.
   /// Put this function here since the the `MethodChannel` in the `AgoraVideoView` is released
   /// after `AgoraVideoView.dispose`, so the `MethodChannel.invokeMethod` will never return
   /// after `AgoraVideoView.dispose`.

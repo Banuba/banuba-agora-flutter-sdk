@@ -150,7 +150,7 @@
                                   @"agora_rtc_ng/video_view_controller"
                   binaryMessenger:messenger];
         
-      __weak typeof(self) weakSelf = self;
+      __weak VideoViewController *weakSelf = self;
       [self.methodChannel setMethodCallHandler:^(FlutterMethodCall *_Nonnull call,
                                                    FlutterResult _Nonnull result) {
         if (weakSelf != nil) {
@@ -169,17 +169,24 @@
       NSString *channelId = data[@"channelId"];
       NSNumber *videoSourceType = data[@"videoSourceType"];
       NSNumber *videoViewSetupMode = data[@"videoViewSetupMode"];
-
+      NSNumber *enableArgusCountersValue = data[@"enableArgusCounters"];
+      BOOL enableArgusCounters = enableArgusCountersValue != nil ? [enableArgusCountersValue boolValue] : YES;  // Default to YES for backward compatibility
       int64_t textureId = [self createTextureRender:(intptr_t)[irisRtcRenderingHandle longLongValue]
                                                 uid:uid
                                           channelId:channelId
                                     videoSourceType:videoSourceType
-                                 videoViewSetupMode:videoViewSetupMode];
+                                 videoViewSetupMode:videoViewSetupMode
+                                enableArgusCounters:enableArgusCounters];
       result(@(textureId));
   } else if ([@"destroyTextureRender" isEqualToString:call.method]) {
       NSNumber *textureIdValue = call.arguments;
       BOOL success = [self destroyTextureRender: [textureIdValue longLongValue]];
       result(@(success));
+  } else if ([@"addPlatformRenderRef" isEqualToString:call.method]) {
+      NSNumber *platformViewIdValue = call.arguments;
+      int64_t platformViewId = [platformViewIdValue longLongValue];
+      [self addPlatformRenderRef:platformViewId];
+      result(@(YES));
   } else if ([@"dePlatfromViewRef" isEqualToString:call.method]) {
       NSNumber *platformViewIdValue = call.arguments;
       int64_t platformViewId = [platformViewIdValue longLongValue];
@@ -212,12 +219,14 @@
                            uid:(NSNumber *)uid
                      channelId:(NSString *)channelId
                videoSourceType:(NSNumber *)videoSourceType
-            videoViewSetupMode:(NSNumber *)videoViewSetupMode {
+            videoViewSetupMode:(NSNumber *)videoViewSetupMode
+           enableArgusCounters:(BOOL)enableArgusCounters {
     agora::iris::IrisRtcRendering *irisRtcRendering = reinterpret_cast<agora::iris::IrisRtcRendering *>(irisRtcRenderingHandle);
-    TextureRender *textureRender = [[TextureRender alloc]
-        initWithTextureRegistry:self.textureRegistry
-                      messenger:self.messenger
-         irisRtcRenderingHandle:irisRtcRendering];
+    TextureRender *textureRender = [[TextureRender alloc] initWithTextureRegistry:self.textureRegistry
+                                                                        messenger:self.messenger
+                                                                    methodChannel:self.methodChannel
+                                                           irisRtcRenderingHandle:irisRtcRendering
+                                                              enableArgusCounters:enableArgusCounters];
     int64_t textureId = [textureRender textureId];
     [textureRender updateData:uid channelId:channelId videoSourceType:videoSourceType videoViewSetupMode:videoViewSetupMode];
     self.textureRenders[@(textureId)] = textureRender;
@@ -240,5 +249,12 @@
     }
     [self.textureRenders removeAllObjects];
 }
+
+// - (void)dealloc {
+//   // do not do this, coz TextureRender::TextureRender will call
+//   // [textureRegistry unregisterTexture] which may already been dealloced by
+//   // flutter and will bring crash
+//   // [self dispose];
+// }
 
 @end

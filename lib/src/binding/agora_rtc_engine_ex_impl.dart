@@ -2,8 +2,8 @@
 
 // ignore_for_file: public_member_api_docs, unused_local_variable, unused_import, annotate_overrides
 
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
-import 'package:agora_rtc_engine/src/binding/impl_forward_export.dart';
+import '/src/binding_forward_export.dart';
+import '/src/binding/impl_forward_export.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
 class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
@@ -31,7 +31,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required ChannelMediaOptions options}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_joinChannelEx_a3cd08c';
-    final param = createParams({
+    final requestParam = createParams({
       'token': token,
       'connection': connection.toJson(),
       'options': options.toJson()
@@ -40,7 +40,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(connection.collectBufferList());
     buffers.addAll(options.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -56,7 +56,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required RtcConnection connection, LeaveChannelOptions? options}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_leaveChannelEx_b03ee9a';
-    final param = createParams(
+    final requestParam = createParams(
         {'connection': connection.toJson(), 'options': options?.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
@@ -64,7 +64,35 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       buffers.addAll(options.collectBufferList());
     }
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> leaveChannelWithUserAccountEx(
+      {required String channelId,
+      required String userAccount,
+      LeaveChannelOptions? options}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_leaveChannelWithUserAccountEx_8bbe372';
+    final requestParam = createParams({
+      'channelId': channelId,
+      'userAccount': userAccount,
+      'options': options?.toJson()
+    });
+    final List<Uint8List> buffers = [];
+    if (options != null) {
+      buffers.addAll(options.collectBufferList());
+    }
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -81,13 +109,13 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_updateChannelMediaOptionsEx_457bb35';
-    final param = createParams(
+    final requestParam = createParams(
         {'options': options.toJson(), 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(options.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -104,13 +132,13 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setVideoEncoderConfigurationEx_4670c1e';
-    final param = createParams(
+    final requestParam = createParams(
         {'config': config.toJson(), 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(config.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -126,13 +154,13 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required VideoCanvas canvas, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setupRemoteVideoEx_522a409';
-    final param = createParams(
+    final requestParam = createParams(
         {'canvas': canvas.toJson(), 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(canvas.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -150,12 +178,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteRemoteAudioStreamEx_6d93082';
-    final param = createParams(
+    final requestParam = createParams(
         {'uid': uid, 'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -173,12 +201,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteRemoteVideoStreamEx_6d93082';
-    final param = createParams(
+    final requestParam = createParams(
         {'uid': uid, 'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -196,7 +224,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setRemoteVideoStreamTypeEx_01dc428';
-    final param = createParams({
+    final requestParam = createParams({
       'uid': uid,
       'streamType': streamType.value(),
       'connection': connection.toJson()
@@ -204,7 +232,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -220,12 +248,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required bool mute, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteLocalAudioStreamEx_3cf17a4';
-    final param =
+    final requestParam =
         createParams({'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -241,12 +269,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required bool mute, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteLocalVideoStreamEx_3cf17a4';
-    final param =
+    final requestParam =
         createParams({'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -262,12 +290,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required bool mute, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteAllRemoteAudioStreamsEx_3cf17a4';
-    final param =
+    final requestParam =
         createParams({'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -283,12 +311,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required bool mute, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteAllRemoteVideoStreamsEx_3cf17a4';
-    final param =
+    final requestParam =
         createParams({'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -306,7 +334,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setSubscribeAudioBlocklistEx_9f1e85c';
-    final param = createParams({
+    final requestParam = createParams({
       'uidList': uidList,
       'uidNumber': uidNumber,
       'connection': connection.toJson()
@@ -314,7 +342,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -332,7 +360,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setSubscribeAudioAllowlistEx_9f1e85c';
-    final param = createParams({
+    final requestParam = createParams({
       'uidList': uidList,
       'uidNumber': uidNumber,
       'connection': connection.toJson()
@@ -340,7 +368,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -358,7 +386,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setSubscribeVideoBlocklistEx_9f1e85c';
-    final param = createParams({
+    final requestParam = createParams({
       'uidList': uidList,
       'uidNumber': uidNumber,
       'connection': connection.toJson()
@@ -366,7 +394,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -384,7 +412,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setSubscribeVideoAllowlistEx_9f1e85c';
-    final param = createParams({
+    final requestParam = createParams({
       'uidList': uidList,
       'uidNumber': uidNumber,
       'connection': connection.toJson()
@@ -392,7 +420,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -410,7 +438,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setRemoteVideoSubscriptionOptionsEx_3cd36bc';
-    final param = createParams({
+    final requestParam = createParams({
       'uid': uid,
       'options': options.toJson(),
       'connection': connection.toJson()
@@ -419,7 +447,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(options.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -438,7 +466,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setRemoteVoicePositionEx_fc0471c';
-    final param = createParams({
+    final requestParam = createParams({
       'uid': uid,
       'pan': pan,
       'gain': gain,
@@ -447,7 +475,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -465,7 +493,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setRemoteUserSpatialAudioParamsEx_40ca9fb';
-    final param = createParams({
+    final requestParam = createParams({
       'uid': uid,
       'params': params.toJson(),
       'connection': connection.toJson()
@@ -474,7 +502,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(params.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -493,7 +521,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setRemoteRenderModeEx_a72fe4e';
-    final param = createParams({
+    final requestParam = createParams({
       'uid': uid,
       'renderMode': renderMode.value(),
       'mirrorMode': mirrorMode.value(),
@@ -502,7 +530,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -520,7 +548,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       String? deviceName}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_enableLoopbackRecordingEx_4f41542';
-    final param = createParams({
+    final requestParam = createParams({
       'connection': connection.toJson(),
       'enabled': enabled,
       if (deviceName != null) 'deviceName': deviceName
@@ -528,7 +556,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -544,12 +572,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required int volume, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_adjustRecordingSignalVolumeEx_e84d10e';
-    final param =
+    final requestParam =
         createParams({'volume': volume, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -565,12 +593,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required bool mute, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_muteRecordingSignalEx_3cf17a4';
-    final param =
+    final requestParam =
         createParams({'mute': mute, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -588,12 +616,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_adjustUserPlaybackSignalVolumeEx_adbd29c';
-    final param = createParams(
+    final requestParam = createParams(
         {'uid': uid, 'volume': volume, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -609,11 +637,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_getConnectionStateEx_c81e1a4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -629,7 +657,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required EncryptionConfig config}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_enableEncryptionEx_10cd872';
-    final param = createParams({
+    final requestParam = createParams({
       'connection': connection.toJson(),
       'enabled': enabled,
       'config': config.toJson()
@@ -638,7 +666,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(connection.collectBufferList());
     buffers.addAll(config.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -655,13 +683,13 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_createDataStreamEx_9f641b6';
-    final param = createParams(
+    final requestParam = createParams(
         {'config': config.toJson(), 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(config.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -683,7 +711,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_sendStreamMessageEx_0c34857';
-    final param = createParams({
+    final requestParam = createParams({
       'streamId': streamId,
       'length': length,
       'connection': connection.toJson()
@@ -692,7 +720,65 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.add(data);
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> sendRdtMessageEx(
+      {required int uid,
+      required RdtStreamType type,
+      required String data,
+      required int length,
+      required RtcConnection connection}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_sendRdtMessageEx_3a2998e';
+    final requestParam = createParams({
+      'uid': uid,
+      'type': type.value(),
+      'data': data,
+      'length': length,
+      'connection': connection.toJson()
+    });
+    final List<Uint8List> buffers = [];
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> sendMediaControlMessageEx(
+      {required int uid,
+      required String data,
+      required int length,
+      required RtcConnection connection}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_sendMediaControlMessageEx_907822a';
+    final requestParam = createParams({
+      'uid': uid,
+      'data': data,
+      'length': length,
+      'connection': connection.toJson()
+    });
+    final List<Uint8List> buffers = [];
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -710,7 +796,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_addVideoWatermarkEx_ad7daa3';
-    final param = createParams({
+    final requestParam = createParams({
       'watermarkUrl': watermarkUrl,
       'options': options.toJson(),
       'connection': connection.toJson()
@@ -719,7 +805,28 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(options.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> removeVideoWatermarkEx(
+      {required String id, required RtcConnection connection}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_removeVideoWatermarkEx_e405325';
+    final requestParam =
+        createParams({'id': id, 'connection': connection.toJson()});
+    final List<Uint8List> buffers = [];
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -734,11 +841,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
   Future<void> clearVideoWatermarkEx(RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_clearVideoWatermarkEx_c81e1a4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -759,7 +866,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_sendCustomReportMessageEx_833b8a5';
-    final param = createParams({
+    final requestParam = createParams({
       'id': id,
       'category': category,
       'event': event,
@@ -770,7 +877,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -789,7 +896,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_enableAudioVolumeIndicationEx_ac84f2a';
-    final param = createParams({
+    final requestParam = createParams({
       'interval': interval,
       'smooth': smooth,
       'reportVad': reportVad,
@@ -798,7 +905,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -814,11 +921,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required String url, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_startRtmpStreamWithoutTranscodingEx_e405325';
-    final param = createParams({'url': url, 'connection': connection.toJson()});
+    final requestParam =
+        createParams({'url': url, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -836,7 +944,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_startRtmpStreamWithTranscodingEx_ab121b5';
-    final param = createParams({
+    final requestParam = createParams({
       'url': url,
       'transcoding': transcoding.toJson(),
       'connection': connection.toJson()
@@ -845,7 +953,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(transcoding.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -862,7 +970,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_updateRtmpTranscodingEx_77f3ee8';
-    final param = createParams({
+    final requestParam = createParams({
       'transcoding': transcoding.toJson(),
       'connection': connection.toJson()
     });
@@ -870,7 +978,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(transcoding.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -886,11 +994,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required String url, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_stopRtmpStreamEx_e405325';
-    final param = createParams({'url': url, 'connection': connection.toJson()});
+    final requestParam =
+        createParams({'url': url, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -907,7 +1016,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_startOrUpdateChannelMediaRelayEx_4ad39a8';
-    final param = createParams({
+    final requestParam = createParams({
       'configuration': configuration.toJson(),
       'connection': connection.toJson()
     });
@@ -915,7 +1024,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(configuration.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -930,11 +1039,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
   Future<void> stopChannelMediaRelayEx(RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_stopChannelMediaRelayEx_c81e1a4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -949,11 +1058,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
   Future<void> pauseAllChannelMediaRelayEx(RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_pauseAllChannelMediaRelayEx_c81e1a4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -968,11 +1077,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
   Future<void> resumeAllChannelMediaRelayEx(RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_resumeAllChannelMediaRelayEx_c81e1a4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -988,12 +1097,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required String userAccount, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_getUserInfoByUserAccountEx_ca39cc6';
-    final param = createParams(
+    final requestParam = createParams(
         {'userAccount': userAccount, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1012,11 +1121,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required int uid, required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_getUserInfoByUidEx_1e78da1';
-    final param = createParams({'uid': uid, 'connection': connection.toJson()});
+    final requestParam =
+        createParams({'uid': uid, 'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1037,7 +1147,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_enableDualStreamModeEx_4b18f41';
-    final param = createParams({
+    final requestParam = createParams({
       'enabled': enabled,
       'streamConfig': streamConfig.toJson(),
       'connection': connection.toJson()
@@ -1046,7 +1156,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(streamConfig.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1064,7 +1174,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setDualStreamModeEx_622d0f3';
-    final param = createParams({
+    final requestParam = createParams({
       'mode': mode.value(),
       'streamConfig': streamConfig.toJson(),
       'connection': connection.toJson()
@@ -1073,7 +1183,32 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(streamConfig.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> setSimulcastConfigEx(
+      {required SimulcastConfig simulcastConfig,
+      required RtcConnection connection}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_setSimulcastConfigEx_bd8d7d0';
+    final requestParam = createParams({
+      'simulcastConfig': simulcastConfig.toJson(),
+      'connection': connection.toJson()
+    });
+    final List<Uint8List> buffers = [];
+    buffers.addAll(simulcastConfig.collectBufferList());
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1092,7 +1227,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setHighPriorityUserListEx_8736b5c';
-    final param = createParams({
+    final requestParam = createParams({
       'uidList': uidList,
       'uidNum': uidNum,
       'option': option.value(),
@@ -1101,7 +1236,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1119,12 +1254,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required String filePath}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_takeSnapshotEx_de1c015';
-    final param = createParams(
+    final requestParam = createParams(
         {'connection': connection.toJson(), 'uid': uid, 'filePath': filePath});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1142,7 +1277,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required RtcConnection connection}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_enableContentInspectEx_c4e7f69';
-    final param = createParams({
+    final requestParam = createParams({
       'enabled': enabled,
       'config': config.toJson(),
       'connection': connection.toJson()
@@ -1151,7 +1286,7 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
     buffers.addAll(config.collectBufferList());
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1166,11 +1301,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
   Future<void> startMediaRenderingTracingEx(RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_startMediaRenderingTracingEx_c81e1a4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1186,12 +1321,12 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       {required RtcConnection connection, required String parameters}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_setParametersEx_8225ea3';
-    final param = createParams(
+    final requestParam = createParams(
         {'connection': connection.toJson(), 'parameters': parameters});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1206,11 +1341,11 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
   Future<String> getCallIdEx(RtcConnection connection) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_getCallIdEx_b13f7c4';
-    final param = createParams({'connection': connection.toJson()});
+    final requestParam = createParams({'connection': connection.toJson()});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }
@@ -1230,13 +1365,129 @@ class RtcEngineExImpl extends RtcEngineImpl implements RtcEngineEx {
       required int length}) async {
     final apiType =
         '${isOverrideClassName ? className : 'RtcEngineEx'}_sendAudioMetadataEx_e2bf1c4';
-    final param =
+    final requestParam =
         createParams({'connection': connection.toJson(), 'length': length});
     final List<Uint8List> buffers = [];
     buffers.addAll(connection.collectBufferList());
     buffers.add(metadata);
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: buffers));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> preloadEffectEx(
+      {required RtcConnection connection,
+      required int soundId,
+      required String filePath,
+      int startPos = 0}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_preloadEffectEx_c9fae88';
+    final requestParam = createParams({
+      'connection': connection.toJson(),
+      'soundId': soundId,
+      'filePath': filePath,
+      'startPos': startPos
+    });
+    final List<Uint8List> buffers = [];
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> playEffectEx(
+      {required RtcConnection connection,
+      required int soundId,
+      required String filePath,
+      required int loopCount,
+      required double pitch,
+      required double pan,
+      required int gain,
+      bool publish = false,
+      int startPos = 0}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_playEffectEx_ae5345c';
+    final requestParam = createParams({
+      'connection': connection.toJson(),
+      'soundId': soundId,
+      'filePath': filePath,
+      'loopCount': loopCount,
+      'pitch': pitch,
+      'pan': pan,
+      'gain': gain,
+      'publish': publish,
+      'startPos': startPos
+    });
+    final List<Uint8List> buffers = [];
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> takeSnapshotWithConfigEx(
+      {required RtcConnection connection,
+      required int uid,
+      required SnapshotConfig config}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_takeSnapshotEx_b856417';
+    final requestParam = createParams({
+      'connection': connection.toJson(),
+      'uid': uid,
+      'config': config.toJson()
+    });
+    final List<Uint8List> buffers = [];
+    buffers.addAll(connection.collectBufferList());
+    buffers.addAll(config.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<void> addVideoWatermarkWithConfigEx(
+      {required WatermarkConfig config,
+      required RtcConnection connection}) async {
+    final apiType =
+        '${isOverrideClassName ? className : 'RtcEngineEx'}_addVideoWatermarkEx_985f23a';
+    final requestParam = createParams(
+        {'config': config.toJson(), 'connection': connection.toJson()});
+    final List<Uint8List> buffers = [];
+    buffers.addAll(config.collectBufferList());
+    buffers.addAll(connection.collectBufferList());
+    final callApiResult = await irisMethodChannel.invokeMethod(
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: buffers));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }

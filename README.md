@@ -96,7 +96,7 @@ Download the `iris_web`(see the link below) artifact and include it as a `<scrip
 </body>
 </html>
 ```
-Download: https://download.agora.io/sdk/release/iris-web-rtc_n440_w4220_0.8.0.js
+Download: https://download.agora.io/sdk/release/iris-web-rtc_n450_w4220_0.8.6.js
 
 **For Testing Purposes**
 
@@ -108,7 +108,7 @@ You can directly depend on the Agora CDN for testing purposes:
 ...
 <body>
   ...
-  <script src="https://download.agora.io/sdk/release/iris-web-rtc_n440_w4220_0.8.0.js"></script>
+  <script src="https://download.agora.io/sdk/release/iris-web-rtc_n450_w4220_0.8.6.js"></script>
 </body>
 </html>
 ```
@@ -136,6 +136,10 @@ Please refer to the [Flutter documentation](https://docs.flutter.dev/platform-in
 * [iOS/macOS](https://api-ref.agora.io/en/voice-sdk/ios/4.x/API/rtc_api_overview_ng.html)
 * [Windows](https://api-ref.agora.io/en/video-sdk/cpp/4.x/API/rtc_api_overview_ng.html)
 * [Web](https://api-ref.agora.io/en/video-sdk/web/4.x/index.html)
+
+## Integration document
+
+* [Picture-in-Picture](docs/integration/Picture-in-Picture.md)
 
 ## Feedback
 

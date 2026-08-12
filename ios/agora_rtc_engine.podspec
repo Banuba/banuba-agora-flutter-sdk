@@ -15,16 +15,22 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Agora' => 'developer@agora.io' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*.{h,mm,m,swift}'
+  s.source_files = 'agora_rtc_engine/Sources/**/*.{h,mm,m,swift}'
   s.dependency 'Flutter'
 
   plugin_dev_path = File.join(File.dirname(File.realpath(__FILE__)), '.plugin_dev')
   if File.exist?(plugin_dev_path)
     puts '[plugin_dev] Found .plugin_dev file, use vendored_frameworks instead.'
-    s.vendored_frameworks = 'libs/*.xcframework'
+    s.vendored_frameworks = 'libs/*.xcframework', 'libs/*.framework'
+    s.dependency 'AgoraRtcEngine_iOS', '4.6.0'
   else
-  s.dependency 'AgoraIrisRTC_iOS', '4.3.2-build.1'
-  s.dependency 'AgoraRtcEngine_iOS', '4.3.2'
+    # iris dependencies start
+    s.dependency 'AgoraIrisRTC_iOS2', '4.6.2-build.1'
+    # iris dependencies end
+
+    # native dependencies start
+    s.dependency 'AgoraVideo_Special_iOS', '4.6.2.70'
+    # native dependencies end
   end
   
   s.platform = :ios, '9.0'

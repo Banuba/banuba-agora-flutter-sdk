@@ -2,8 +2,8 @@
 
 // ignore_for_file: public_member_api_docs, unused_local_variable, unused_import
 
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
-import 'package:agora_rtc_engine/src/binding/impl_forward_export.dart';
+import '/src/binding_forward_export.dart';
+import '/src/binding/impl_forward_export.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
 class AudioEncodedFrameObserverWrapper implements EventLoopEventHandler {
@@ -102,11 +102,18 @@ class AudioEncodedFrameObserverWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('AudioEncodedFrameObserver')) return false;
-    final newEvent = eventName.replaceFirst('AudioEncodedFrameObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('AudioEncodedFrameObserver')) return false;
+      final newEvent = eventName.replaceFirst('AudioEncodedFrameObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }

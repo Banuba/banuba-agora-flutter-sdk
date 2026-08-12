@@ -40,6 +40,10 @@ LocalVideoStats _$LocalVideoStatsFromJson(Map<String, dynamic> json) =>
           _$CaptureBrightnessLevelTypeEnumMap, json['captureBrightnessLevel']),
       dualStreamEnabled: json['dualStreamEnabled'] as bool?,
       hwEncoderAccelerating: (json['hwEncoderAccelerating'] as num?)?.toInt(),
+      simulcastDimensions: (json['simulcastDimensions'] as List<dynamic>?)
+          ?.map((e) => VideoDimensions.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      encodedFrameDepth: (json['encodedFrameDepth'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$LocalVideoStatsToJson(LocalVideoStats instance) {
@@ -78,6 +82,9 @@ Map<String, dynamic> _$LocalVideoStatsToJson(LocalVideoStats instance) {
       _$CaptureBrightnessLevelTypeEnumMap[instance.captureBrightnessLevel]);
   writeNotNull('dualStreamEnabled', instance.dualStreamEnabled);
   writeNotNull('hwEncoderAccelerating', instance.hwEncoderAccelerating);
+  writeNotNull('simulcastDimensions',
+      instance.simulcastDimensions?.map((e) => e.toJson()).toList());
+  writeNotNull('encodedFrameDepth', instance.encodedFrameDepth);
   return val;
 }
 
@@ -122,6 +129,8 @@ RemoteAudioStats _$RemoteAudioStatsFromJson(Map<String, dynamic> json) =>
       frozenRateByCustomPlcCount:
           (json['frozenRateByCustomPlcCount'] as num?)?.toInt(),
       plcCount: (json['plcCount'] as num?)?.toInt(),
+      frozenCntByCustom: (json['frozenCntByCustom'] as num?)?.toInt(),
+      frozenTimeByCustom: (json['frozenTimeByCustom'] as num?)?.toInt(),
       totalActiveTime: (json['totalActiveTime'] as num?)?.toInt(),
       publishDuration: (json['publishDuration'] as num?)?.toInt(),
       qoeQuality: (json['qoeQuality'] as num?)?.toInt(),
@@ -153,6 +162,8 @@ Map<String, dynamic> _$RemoteAudioStatsToJson(RemoteAudioStats instance) {
   writeNotNull(
       'frozenRateByCustomPlcCount', instance.frozenRateByCustomPlcCount);
   writeNotNull('plcCount', instance.plcCount);
+  writeNotNull('frozenCntByCustom', instance.frozenCntByCustom);
+  writeNotNull('frozenTimeByCustom', instance.frozenTimeByCustom);
   writeNotNull('totalActiveTime', instance.totalActiveTime);
   writeNotNull('publishDuration', instance.publishDuration);
   writeNotNull('qoeQuality', instance.qoeQuality);
@@ -170,6 +181,7 @@ RemoteVideoStats _$RemoteVideoStatsFromJson(Map<String, dynamic> json) =>
       width: (json['width'] as num?)?.toInt(),
       height: (json['height'] as num?)?.toInt(),
       receivedBitrate: (json['receivedBitrate'] as num?)?.toInt(),
+      decoderInputFrameRate: (json['decoderInputFrameRate'] as num?)?.toInt(),
       decoderOutputFrameRate: (json['decoderOutputFrameRate'] as num?)?.toInt(),
       rendererOutputFrameRate:
           (json['rendererOutputFrameRate'] as num?)?.toInt(),
@@ -201,6 +213,7 @@ Map<String, dynamic> _$RemoteVideoStatsToJson(RemoteVideoStats instance) {
   writeNotNull('width', instance.width);
   writeNotNull('height', instance.height);
   writeNotNull('receivedBitrate', instance.receivedBitrate);
+  writeNotNull('decoderInputFrameRate', instance.decoderInputFrameRate);
   writeNotNull('decoderOutputFrameRate', instance.decoderOutputFrameRate);
   writeNotNull('rendererOutputFrameRate', instance.rendererOutputFrameRate);
   writeNotNull('frameLossRate', instance.frameLossRate);
@@ -219,6 +232,12 @@ Map<String, dynamic> _$RemoteVideoStatsToJson(RemoteVideoStats instance) {
 const _$VideoStreamTypeEnumMap = {
   VideoStreamType.videoStreamHigh: 0,
   VideoStreamType.videoStreamLow: 1,
+  VideoStreamType.videoStreamLayer1: 4,
+  VideoStreamType.videoStreamLayer2: 5,
+  VideoStreamType.videoStreamLayer3: 6,
+  VideoStreamType.videoStreamLayer4: 7,
+  VideoStreamType.videoStreamLayer5: 8,
+  VideoStreamType.videoStreamLayer6: 9,
 };
 
 VideoCompositingLayout _$VideoCompositingLayoutFromJson(
@@ -616,8 +635,8 @@ ChannelMediaOptions _$ChannelMediaOptionsFromJson(Map<String, dynamic> json) =>
       publishThirdCameraTrack: json['publishThirdCameraTrack'] as bool?,
       publishFourthCameraTrack: json['publishFourthCameraTrack'] as bool?,
       publishMicrophoneTrack: json['publishMicrophoneTrack'] as bool?,
-      publishScreenCaptureVideo: json['publishScreenCaptureVideo'] as bool?,
       publishScreenCaptureAudio: json['publishScreenCaptureAudio'] as bool?,
+      publishScreenCaptureVideo: json['publishScreenCaptureVideo'] as bool?,
       publishScreenTrack: json['publishScreenTrack'] as bool?,
       publishSecondaryScreenTrack: json['publishSecondaryScreenTrack'] as bool?,
       publishThirdScreenTrack: json['publishThirdScreenTrack'] as bool?,
@@ -657,6 +676,14 @@ ChannelMediaOptions _$ChannelMediaOptionsFromJson(Map<String, dynamic> json) =>
       isInteractiveAudience: json['isInteractiveAudience'] as bool?,
       customVideoTrackId: (json['customVideoTrackId'] as num?)?.toInt(),
       isAudioFilterable: json['isAudioFilterable'] as bool?,
+      parameters: json['parameters'] as String?,
+      enableMultipath: json['enableMultipath'] as bool?,
+      uplinkMultipathMode: $enumDecodeNullable(
+          _$MultipathModeEnumMap, json['uplinkMultipathMode']),
+      downlinkMultipathMode: $enumDecodeNullable(
+          _$MultipathModeEnumMap, json['downlinkMultipathMode']),
+      preferMultipathType: $enumDecodeNullable(
+          _$MultipathTypeEnumMap, json['preferMultipathType']),
     );
 
 Map<String, dynamic> _$ChannelMediaOptionsToJson(ChannelMediaOptions instance) {
@@ -674,8 +701,8 @@ Map<String, dynamic> _$ChannelMediaOptionsToJson(ChannelMediaOptions instance) {
   writeNotNull('publishThirdCameraTrack', instance.publishThirdCameraTrack);
   writeNotNull('publishFourthCameraTrack', instance.publishFourthCameraTrack);
   writeNotNull('publishMicrophoneTrack', instance.publishMicrophoneTrack);
-  writeNotNull('publishScreenCaptureVideo', instance.publishScreenCaptureVideo);
   writeNotNull('publishScreenCaptureAudio', instance.publishScreenCaptureAudio);
+  writeNotNull('publishScreenCaptureVideo', instance.publishScreenCaptureVideo);
   writeNotNull('publishScreenTrack', instance.publishScreenTrack);
   writeNotNull(
       'publishSecondaryScreenTrack', instance.publishSecondaryScreenTrack);
@@ -715,6 +742,14 @@ Map<String, dynamic> _$ChannelMediaOptionsToJson(ChannelMediaOptions instance) {
   writeNotNull('isInteractiveAudience', instance.isInteractiveAudience);
   writeNotNull('customVideoTrackId', instance.customVideoTrackId);
   writeNotNull('isAudioFilterable', instance.isAudioFilterable);
+  writeNotNull('parameters', instance.parameters);
+  writeNotNull('enableMultipath', instance.enableMultipath);
+  writeNotNull('uplinkMultipathMode',
+      _$MultipathModeEnumMap[instance.uplinkMultipathMode]);
+  writeNotNull('downlinkMultipathMode',
+      _$MultipathModeEnumMap[instance.downlinkMultipathMode]);
+  writeNotNull('preferMultipathType',
+      _$MultipathTypeEnumMap[instance.preferMultipathType]);
   return val;
 }
 
@@ -734,6 +769,18 @@ const _$ChannelProfileTypeEnumMap = {
   ChannelProfileType.channelProfileGame: 2,
   ChannelProfileType.channelProfileCloudGaming: 3,
   ChannelProfileType.channelProfileCommunication1v1: 4,
+};
+
+const _$MultipathModeEnumMap = {
+  MultipathMode.duplicate: 0,
+  MultipathMode.dynamic: 1,
+};
+
+const _$MultipathTypeEnumMap = {
+  MultipathType.lan: 0,
+  MultipathType.wifi: 1,
+  MultipathType.mobile: 2,
+  MultipathType.unknown: 99,
 };
 
 LeaveChannelOptions _$LeaveChannelOptionsFromJson(Map<String, dynamic> json) =>
@@ -809,7 +856,9 @@ const _$AudioScenarioTypeEnumMap = {
   AudioScenarioType.audioScenarioChatroom: 5,
   AudioScenarioType.audioScenarioChorus: 7,
   AudioScenarioType.audioScenarioMeeting: 8,
-  AudioScenarioType.audioScenarioNum: 9,
+  AudioScenarioType.audioScenarioAiServer: 9,
+  AudioScenarioType.audioScenarioAiClient: 10,
+  AudioScenarioType.audioScenarioNum: 11,
 };
 
 const _$ThreadPriorityTypeEnumMap = {
@@ -822,6 +871,7 @@ const _$ThreadPriorityTypeEnumMap = {
 };
 
 Metadata _$MetadataFromJson(Map<String, dynamic> json) => Metadata(
+      channelId: json['channelId'] as String?,
       uid: (json['uid'] as num?)?.toInt(),
       size: (json['size'] as num?)?.toInt(),
       timeStampMs: (json['timeStampMs'] as num?)?.toInt(),
@@ -836,6 +886,7 @@ Map<String, dynamic> _$MetadataToJson(Metadata instance) {
     }
   }
 
+  writeNotNull('channelId', instance.channelId);
   writeNotNull('uid', instance.uid);
   writeNotNull('size', instance.size);
   writeNotNull('timeStampMs', instance.timeStampMs);
@@ -1034,6 +1085,7 @@ const _$AudioMixingReasonTypeEnumMap = {
   AudioMixingReasonType.audioMixingReasonOneLoopCompleted: 721,
   AudioMixingReasonType.audioMixingReasonAllLoopsCompleted: 723,
   AudioMixingReasonType.audioMixingReasonStoppedByUser: 724,
+  AudioMixingReasonType.audioMixingReasonResumedByUser: 726,
   AudioMixingReasonType.audioMixingReasonOk: 0,
 };
 
@@ -1076,6 +1128,12 @@ const _$StreamFallbackOptionsEnumMap = {
   StreamFallbackOptions.streamFallbackOptionDisabled: 0,
   StreamFallbackOptions.streamFallbackOptionVideoStreamLow: 1,
   StreamFallbackOptions.streamFallbackOptionAudioOnly: 2,
+  StreamFallbackOptions.streamFallbackOptionVideoStreamLayer1: 3,
+  StreamFallbackOptions.streamFallbackOptionVideoStreamLayer2: 4,
+  StreamFallbackOptions.streamFallbackOptionVideoStreamLayer3: 5,
+  StreamFallbackOptions.streamFallbackOptionVideoStreamLayer4: 6,
+  StreamFallbackOptions.streamFallbackOptionVideoStreamLayer5: 7,
+  StreamFallbackOptions.streamFallbackOptionVideoStreamLayer6: 8,
 };
 
 const _$PriorityTypeEnumMap = {
@@ -1107,6 +1165,17 @@ const _$ProxyTypeEnumMap = {
 const _$FeatureTypeEnumMap = {
   FeatureType.videoVirtualBackground: 1,
   FeatureType.videoBeautyEffect: 2,
+};
+
+const _$VideoEffectNodeIdEnumMap = {
+  VideoEffectNodeId.beauty: 1,
+  VideoEffectNodeId.styleMakeup: 2,
+  VideoEffectNodeId.filter: 4,
+};
+
+const _$VideoEffectActionEnumMap = {
+  VideoEffectAction.save: 1,
+  VideoEffectAction.reset: 2,
 };
 
 const _$MetadataTypeEnumMap = {
@@ -1146,6 +1215,7 @@ const _$MediaDeviceStateTypeEnumMap = {
   MediaDeviceStateType.mediaDeviceStateIdle: 0,
   MediaDeviceStateType.mediaDeviceStateActive: 1,
   MediaDeviceStateType.mediaDeviceStateDisabled: 2,
+  MediaDeviceStateType.mediaDeviceStatePluggedIn: 3,
   MediaDeviceStateType.mediaDeviceStateNotPresent: 4,
   MediaDeviceStateType.mediaDeviceStateUnplugged: 8,
 };

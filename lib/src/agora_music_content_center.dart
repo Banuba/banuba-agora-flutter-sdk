@@ -1,4 +1,5 @@
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
+import '/src/_serializable.dart';
+import '/src/binding_forward_export.dart';
 part 'agora_music_content_center.g.dart';
 
 /// @nodoc
@@ -114,7 +115,7 @@ extension MusicContentCenterStateReasonExt on MusicContentCenterStateReason {
 
 /// @nodoc
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class MusicChartInfo {
+class MusicChartInfo implements AgoraSerializable {
   /// @nodoc
   const MusicChartInfo({this.chartName, this.id});
 
@@ -130,7 +131,7 @@ class MusicChartInfo {
   factory MusicChartInfo.fromJson(Map<String, dynamic> json) =>
       _$MusicChartInfoFromJson(json);
 
-  /// @nodoc
+  @override
   Map<String, dynamic> toJson() => _$MusicChartInfoToJson(this);
 }
 
@@ -161,7 +162,7 @@ extension MusicCacheStatusTypeExt on MusicCacheStatusType {
 
 /// @nodoc
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class MusicCacheInfo {
+class MusicCacheInfo implements AgoraSerializable {
   /// @nodoc
   const MusicCacheInfo({this.songCode, this.status});
 
@@ -177,7 +178,7 @@ class MusicCacheInfo {
   factory MusicCacheInfo.fromJson(Map<String, dynamic> json) =>
       _$MusicCacheInfoFromJson(json);
 
-  /// @nodoc
+  @override
   Map<String, dynamic> toJson() => _$MusicCacheInfoToJson(this);
 }
 
@@ -192,7 +193,7 @@ abstract class MusicChartCollection {
 
 /// @nodoc
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class MvProperty {
+class MvProperty implements AgoraSerializable {
   /// @nodoc
   const MvProperty({this.resolution, this.bandwidth});
 
@@ -208,13 +209,13 @@ class MvProperty {
   factory MvProperty.fromJson(Map<String, dynamic> json) =>
       _$MvPropertyFromJson(json);
 
-  /// @nodoc
+  @override
   Map<String, dynamic> toJson() => _$MvPropertyToJson(this);
 }
 
 /// @nodoc
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class ClimaxSegment {
+class ClimaxSegment implements AgoraSerializable {
   /// @nodoc
   const ClimaxSegment({this.startTimeMs, this.endTimeMs});
 
@@ -230,13 +231,13 @@ class ClimaxSegment {
   factory ClimaxSegment.fromJson(Map<String, dynamic> json) =>
       _$ClimaxSegmentFromJson(json);
 
-  /// @nodoc
+  @override
   Map<String, dynamic> toJson() => _$ClimaxSegmentToJson(this);
 }
 
 /// @nodoc
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Music {
+class Music implements AgoraSerializable {
   /// @nodoc
   const Music(
       {this.songCode,
@@ -313,7 +314,7 @@ class Music {
   /// @nodoc
   factory Music.fromJson(Map<String, dynamic> json) => _$MusicFromJson(json);
 
-  /// @nodoc
+  @override
   Map<String, dynamic> toJson() => _$MusicToJson(this);
 }
 
@@ -358,19 +359,7 @@ class MusicContentCenterEventHandler {
   final void Function(String requestId, int songCode, String lyricUrl,
       MusicContentCenterStateReason reason)? onLyricResult;
 
-  /// 音乐资源的详细信息回调。
-  ///
-  /// 当你调用 getSongSimpleInfo 获取某一音乐资源的详细信息后，SDK 会触发该回调。
-  ///
-  /// * [reason] 音乐内容中心的请求状态码，详见 MusicContentCenterStateReason 。
-  /// * [requestId] The request ID. 本次请求的唯一标识。
-  /// * [songCode] The code of the music, which is an unique identifier of the music.
-  /// * [simpleInfo] 音乐资源的相关信息，包含下列内容：
-  ///  副歌片段的开始和结束的时间（ms）
-  ///  副歌片段的歌词下载地址
-  ///  副歌片段时长（ms）
-  ///  歌曲名称
-  ///  歌手名
+  /// @nodoc
   final void Function(String requestId, int songCode, String simpleInfo,
       MusicContentCenterStateReason reason)? onSongSimpleInfoResult;
 
@@ -386,7 +375,7 @@ class MusicContentCenterEventHandler {
 
 /// @nodoc
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class MusicContentCenterConfiguration {
+class MusicContentCenterConfiguration implements AgoraSerializable {
   /// @nodoc
   const MusicContentCenterConfiguration(
       {this.appId, this.token, this.mccUid, this.maxCacheSize, this.mccDomain});
@@ -415,7 +404,7 @@ class MusicContentCenterConfiguration {
   factory MusicContentCenterConfiguration.fromJson(Map<String, dynamic> json) =>
       _$MusicContentCenterConfigurationFromJson(json);
 
-  /// @nodoc
+  @override
   Map<String, dynamic> toJson() =>
       _$MusicContentCenterConfigurationToJson(this);
 }

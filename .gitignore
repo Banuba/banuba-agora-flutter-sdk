@@ -8,6 +8,11 @@
 .buildlog/
 .history
 .svn/
+/artifacts
+
+# FVM Version Cache
+.fvm/
+.fvmrc
 
 # IntelliJ related
 *.iml
@@ -41,3 +46,6 @@ third_party/
 
 test_shard/**/scripts/iris_web_version.js
 test_shard/**/web/iris_web_version.js
+
+artifacts
+DerivedData

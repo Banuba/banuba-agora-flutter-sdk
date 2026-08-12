@@ -133,6 +133,7 @@ const _$AudioCodecTypeEnumMap = {
   AudioCodecType.audioCodecJc1: 10,
   AudioCodecType.audioCodecHeaac2: 11,
   AudioCodecType.audioCodecLpcnet: 12,
+  AudioCodecType.audioCodecOpusmc: 13,
 };
 
 AudioPcmDataInfo _$AudioPcmDataInfoFromJson(Map<String, dynamic> json) =>
@@ -186,12 +187,17 @@ Map<String, dynamic> _$VideoSubscriptionOptionsToJson(
 const _$VideoStreamTypeEnumMap = {
   VideoStreamType.videoStreamHigh: 0,
   VideoStreamType.videoStreamLow: 1,
+  VideoStreamType.videoStreamLayer1: 4,
+  VideoStreamType.videoStreamLayer2: 5,
+  VideoStreamType.videoStreamLayer3: 6,
+  VideoStreamType.videoStreamLayer4: 7,
+  VideoStreamType.videoStreamLayer5: 8,
+  VideoStreamType.videoStreamLayer6: 9,
 };
 
 EncodedVideoFrameInfo _$EncodedVideoFrameInfoFromJson(
         Map<String, dynamic> json) =>
     EncodedVideoFrameInfo(
-      uid: (json['uid'] as num?)?.toInt(),
       codecType:
           $enumDecodeNullable(_$VideoCodecTypeEnumMap, json['codecType']),
       width: (json['width'] as num?)?.toInt(),
@@ -219,7 +225,6 @@ Map<String, dynamic> _$EncodedVideoFrameInfoToJson(
     }
   }
 
-  writeNotNull('uid', instance.uid);
   writeNotNull('codecType', _$VideoCodecTypeEnumMap[instance.codecType]);
   writeNotNull('width', instance.width);
   writeNotNull('height', instance.height);
@@ -256,6 +261,7 @@ AdvanceOptions _$AdvanceOptionsFromJson(Map<String, dynamic> json) =>
           _$EncodingPreferenceEnumMap, json['encodingPreference']),
       compressionPreference: $enumDecodeNullable(
           _$CompressionPreferenceEnumMap, json['compressionPreference']),
+      encodeAlpha: json['encodeAlpha'] as bool?,
     );
 
 Map<String, dynamic> _$AdvanceOptionsToJson(AdvanceOptions instance) {
@@ -271,6 +277,7 @@ Map<String, dynamic> _$AdvanceOptionsToJson(AdvanceOptions instance) {
       _$EncodingPreferenceEnumMap[instance.encodingPreference]);
   writeNotNull('compressionPreference',
       _$CompressionPreferenceEnumMap[instance.compressionPreference]);
+  writeNotNull('encodeAlpha', instance.encodeAlpha);
   return val;
 }
 
@@ -281,6 +288,7 @@ const _$EncodingPreferenceEnumMap = {
 };
 
 const _$CompressionPreferenceEnumMap = {
+  CompressionPreference.preferCompressionAuto: -1,
   CompressionPreference.preferLowLatency: 0,
   CompressionPreference.preferQuality: 1,
 };
@@ -426,6 +434,7 @@ const _$OrientationModeEnumMap = {
 };
 
 const _$DegradationPreferenceEnumMap = {
+  DegradationPreference.maintainAuto: -1,
   DegradationPreference.maintainQuality: 0,
   DegradationPreference.maintainFramerate: 1,
   DegradationPreference.maintainBalanced: 2,
@@ -483,6 +492,53 @@ Map<String, dynamic> _$SimulcastStreamConfigToJson(
   writeNotNull('dimensions', instance.dimensions?.toJson());
   writeNotNull('kBitrate', instance.kBitrate);
   writeNotNull('framerate', instance.framerate);
+  return val;
+}
+
+SimulcastConfig _$SimulcastConfigFromJson(Map<String, dynamic> json) =>
+    SimulcastConfig(
+      configs: (json['configs'] as List<dynamic>?)
+          ?.map((e) => StreamLayerConfig.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      publishFallbackEnable: json['publish_fallback_enable'] as bool?,
+    );
+
+Map<String, dynamic> _$SimulcastConfigToJson(SimulcastConfig instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('configs', instance.configs?.map((e) => e.toJson()).toList());
+  writeNotNull('publish_fallback_enable', instance.publishFallbackEnable);
+  return val;
+}
+
+StreamLayerConfig _$StreamLayerConfigFromJson(Map<String, dynamic> json) =>
+    StreamLayerConfig(
+      dimensions: json['dimensions'] == null
+          ? null
+          : VideoDimensions.fromJson(
+              json['dimensions'] as Map<String, dynamic>),
+      framerate: (json['framerate'] as num?)?.toInt(),
+      enable: json['enable'] as bool?,
+    );
+
+Map<String, dynamic> _$StreamLayerConfigToJson(StreamLayerConfig instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('dimensions', instance.dimensions?.toJson());
+  writeNotNull('framerate', instance.framerate);
+  writeNotNull('enable', instance.enable);
   return val;
 }
 
@@ -547,6 +603,7 @@ WatermarkOptions _$WatermarkOptionsFromJson(Map<String, dynamic> json) =>
           : WatermarkRatio.fromJson(
               json['watermarkRatio'] as Map<String, dynamic>),
       mode: $enumDecodeNullable(_$WatermarkFitModeEnumMap, json['mode']),
+      zOrder: (json['zOrder'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$WatermarkOptionsToJson(WatermarkOptions instance) {
@@ -565,6 +622,7 @@ Map<String, dynamic> _$WatermarkOptionsToJson(WatermarkOptions instance) {
       'positionInPortraitMode', instance.positionInPortraitMode?.toJson());
   writeNotNull('watermarkRatio', instance.watermarkRatio?.toJson());
   writeNotNull('mode', _$WatermarkFitModeEnumMap[instance.mode]);
+  writeNotNull('zOrder', instance.zOrder);
   return val;
 }
 
@@ -572,6 +630,205 @@ const _$WatermarkFitModeEnumMap = {
   WatermarkFitMode.fitModeCoverPosition: 0,
   WatermarkFitMode.fitModeUseImageRatio: 1,
 };
+
+WatermarkTimestamp _$WatermarkTimestampFromJson(Map<String, dynamic> json) =>
+    WatermarkTimestamp(
+      fontSize: (json['fontSize'] as num?)?.toInt(),
+      fontFilePath: json['fontFilePath'] as String?,
+      strokeWidth: (json['strokeWidth'] as num?)?.toInt(),
+      format: json['format'] as String?,
+    );
+
+Map<String, dynamic> _$WatermarkTimestampToJson(WatermarkTimestamp instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fontSize', instance.fontSize);
+  writeNotNull('fontFilePath', instance.fontFilePath);
+  writeNotNull('strokeWidth', instance.strokeWidth);
+  writeNotNull('format', instance.format);
+  return val;
+}
+
+WatermarkLiteral _$WatermarkLiteralFromJson(Map<String, dynamic> json) =>
+    WatermarkLiteral(
+      fontSize: (json['fontSize'] as num?)?.toInt(),
+      strokeWidth: (json['strokeWidth'] as num?)?.toInt(),
+      wmLiteral: json['wmLiteral'] as String?,
+      fontFilePath: json['fontFilePath'] as String?,
+    );
+
+Map<String, dynamic> _$WatermarkLiteralToJson(WatermarkLiteral instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fontSize', instance.fontSize);
+  writeNotNull('strokeWidth', instance.strokeWidth);
+  writeNotNull('wmLiteral', instance.wmLiteral);
+  writeNotNull('fontFilePath', instance.fontFilePath);
+  return val;
+}
+
+WatermarkBuffer _$WatermarkBufferFromJson(Map<String, dynamic> json) =>
+    WatermarkBuffer(
+      width: (json['width'] as num?)?.toInt(),
+      height: (json['height'] as num?)?.toInt(),
+      length: (json['length'] as num?)?.toInt(),
+      format: $enumDecodeNullable(_$VideoPixelFormatEnumMap, json['format']),
+    );
+
+Map<String, dynamic> _$WatermarkBufferToJson(WatermarkBuffer instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('width', instance.width);
+  writeNotNull('height', instance.height);
+  writeNotNull('length', instance.length);
+  writeNotNull('format', _$VideoPixelFormatEnumMap[instance.format]);
+  return val;
+}
+
+const _$VideoPixelFormatEnumMap = {
+  VideoPixelFormat.videoPixelDefault: 0,
+  VideoPixelFormat.videoPixelI420: 1,
+  VideoPixelFormat.videoPixelBgra: 2,
+  VideoPixelFormat.videoPixelNv21: 3,
+  VideoPixelFormat.videoPixelRgba: 4,
+  VideoPixelFormat.videoPixelNv12: 8,
+  VideoPixelFormat.videoTexture2d: 10,
+  VideoPixelFormat.videoTextureOes: 11,
+  VideoPixelFormat.videoCvpixelNv12: 12,
+  VideoPixelFormat.videoCvpixelI420: 13,
+  VideoPixelFormat.videoCvpixelBgra: 14,
+  VideoPixelFormat.videoCvpixelP010: 15,
+  VideoPixelFormat.videoPixelI422: 16,
+  VideoPixelFormat.videoTextureId3d11texture2d: 17,
+  VideoPixelFormat.videoPixelI010: 18,
+};
+
+WatermarkConfig _$WatermarkConfigFromJson(Map<String, dynamic> json) =>
+    WatermarkConfig(
+      id: json['id'] as String?,
+      type: $enumDecodeNullable(_$WatermarkSourceTypeEnumMap, json['type']),
+      buffer: json['buffer'] == null
+          ? null
+          : WatermarkBuffer.fromJson(json['buffer'] as Map<String, dynamic>),
+      timestamp: json['timestamp'] == null
+          ? null
+          : WatermarkTimestamp.fromJson(
+              json['timestamp'] as Map<String, dynamic>),
+      literal: json['literal'] == null
+          ? null
+          : WatermarkLiteral.fromJson(json['literal'] as Map<String, dynamic>),
+      imageUrl: json['imageUrl'] as String?,
+      options: json['options'] == null
+          ? null
+          : WatermarkOptions.fromJson(json['options'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$WatermarkConfigToJson(WatermarkConfig instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('id', instance.id);
+  writeNotNull('type', _$WatermarkSourceTypeEnumMap[instance.type]);
+  writeNotNull('buffer', instance.buffer?.toJson());
+  writeNotNull('timestamp', instance.timestamp?.toJson());
+  writeNotNull('literal', instance.literal?.toJson());
+  writeNotNull('imageUrl', instance.imageUrl);
+  writeNotNull('options', instance.options?.toJson());
+  return val;
+}
+
+const _$WatermarkSourceTypeEnumMap = {
+  WatermarkSourceType.image: 0,
+  WatermarkSourceType.buffer: 1,
+  WatermarkSourceType.literal: 2,
+  WatermarkSourceType.timestamps: 3,
+};
+
+PathStats _$PathStatsFromJson(Map<String, dynamic> json) => PathStats(
+      type: $enumDecodeNullable(_$MultipathTypeEnumMap, json['type']),
+      txKBitRate: (json['txKBitRate'] as num?)?.toInt(),
+      rxKBitRate: (json['rxKBitRate'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$PathStatsToJson(PathStats instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('type', _$MultipathTypeEnumMap[instance.type]);
+  writeNotNull('txKBitRate', instance.txKBitRate);
+  writeNotNull('rxKBitRate', instance.rxKBitRate);
+  return val;
+}
+
+const _$MultipathTypeEnumMap = {
+  MultipathType.lan: 0,
+  MultipathType.wifi: 1,
+  MultipathType.mobile: 2,
+  MultipathType.unknown: 99,
+};
+
+MultipathStats _$MultipathStatsFromJson(Map<String, dynamic> json) =>
+    MultipathStats(
+      lanTxBytes: (json['lanTxBytes'] as num?)?.toInt(),
+      lanRxBytes: (json['lanRxBytes'] as num?)?.toInt(),
+      wifiTxBytes: (json['wifiTxBytes'] as num?)?.toInt(),
+      wifiRxBytes: (json['wifiRxBytes'] as num?)?.toInt(),
+      mobileTxBytes: (json['mobileTxBytes'] as num?)?.toInt(),
+      mobileRxBytes: (json['mobileRxBytes'] as num?)?.toInt(),
+      activePathNum: (json['activePathNum'] as num?)?.toInt(),
+      pathStats: (json['pathStats'] as List<dynamic>?)
+          ?.map((e) => PathStats.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$MultipathStatsToJson(MultipathStats instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('lanTxBytes', instance.lanTxBytes);
+  writeNotNull('lanRxBytes', instance.lanRxBytes);
+  writeNotNull('wifiTxBytes', instance.wifiTxBytes);
+  writeNotNull('wifiRxBytes', instance.wifiRxBytes);
+  writeNotNull('mobileTxBytes', instance.mobileTxBytes);
+  writeNotNull('mobileRxBytes', instance.mobileRxBytes);
+  writeNotNull('activePathNum', instance.activePathNum);
+  writeNotNull(
+      'pathStats', instance.pathStats?.map((e) => e.toJson()).toList());
+  return val;
+}
 
 RtcStats _$RtcStatsFromJson(Map<String, dynamic> json) => RtcStats(
       duration: (json['duration'] as num?)?.toInt(),
@@ -620,6 +877,7 @@ RtcStats _$RtcStatsFromJson(Map<String, dynamic> json) => RtcStats(
               ?.toInt(),
       txPacketLossRate: (json['txPacketLossRate'] as num?)?.toInt(),
       rxPacketLossRate: (json['rxPacketLossRate'] as num?)?.toInt(),
+      lanAccelerateState: (json['lanAccelerateState'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$RtcStatsToJson(RtcStats instance) {
@@ -671,6 +929,7 @@ Map<String, dynamic> _$RtcStatsToJson(RtcStats instance) {
       instance.firstVideoKeyFrameRenderedDurationAfterUnmute);
   writeNotNull('txPacketLossRate', instance.txPacketLossRate);
   writeNotNull('rxPacketLossRate', instance.rxPacketLossRate);
+  writeNotNull('lanAccelerateState', instance.lanAccelerateState);
   return val;
 }
 
@@ -1133,6 +1392,69 @@ Map<String, dynamic> _$LocalTranscoderConfigurationToJson(
   return val;
 }
 
+MixedAudioStream _$MixedAudioStreamFromJson(Map<String, dynamic> json) =>
+    MixedAudioStream(
+      sourceType:
+          $enumDecodeNullable(_$AudioSourceTypeEnumMap, json['sourceType']),
+      remoteUserUid: (json['remoteUserUid'] as num?)?.toInt(),
+      channelId: json['channelId'] as String?,
+      trackId: (json['trackId'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$MixedAudioStreamToJson(MixedAudioStream instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('sourceType', _$AudioSourceTypeEnumMap[instance.sourceType]);
+  writeNotNull('remoteUserUid', instance.remoteUserUid);
+  writeNotNull('channelId', instance.channelId);
+  writeNotNull('trackId', instance.trackId);
+  return val;
+}
+
+const _$AudioSourceTypeEnumMap = {
+  AudioSourceType.audioSourceMicrophone: 0,
+  AudioSourceType.audioSourceCustom: 1,
+  AudioSourceType.audioSourceMediaPlayer: 2,
+  AudioSourceType.audioSourceLoopbackRecording: 3,
+  AudioSourceType.audioSourceMixedStream: 4,
+  AudioSourceType.audioSourceRemoteUser: 5,
+  AudioSourceType.audioSourceRemoteChannel: 6,
+  AudioSourceType.audioSourceUnknown: 100,
+};
+
+LocalAudioMixerConfiguration _$LocalAudioMixerConfigurationFromJson(
+        Map<String, dynamic> json) =>
+    LocalAudioMixerConfiguration(
+      streamCount: (json['streamCount'] as num?)?.toInt(),
+      audioInputStreams: (json['audioInputStreams'] as List<dynamic>?)
+          ?.map((e) => MixedAudioStream.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      syncWithLocalMic: json['syncWithLocalMic'] as bool?,
+    );
+
+Map<String, dynamic> _$LocalAudioMixerConfigurationToJson(
+    LocalAudioMixerConfiguration instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('streamCount', instance.streamCount);
+  writeNotNull('audioInputStreams',
+      instance.audioInputStreams?.map((e) => e.toJson()).toList());
+  writeNotNull('syncWithLocalMic', instance.syncWithLocalMic);
+  return val;
+}
+
 LastmileProbeConfig _$LastmileProbeConfigFromJson(Map<String, dynamic> json) =>
     LastmileProbeConfig(
       probeUplink: json['probeUplink'] as bool?,
@@ -1219,31 +1541,10 @@ const _$LastmileProbeResultStateEnumMap = {
   LastmileProbeResultState.lastmileProbeResultUnavailable: 3,
 };
 
-WlAccStats _$WlAccStatsFromJson(Map<String, dynamic> json) => WlAccStats(
-      e2eDelayPercent: (json['e2eDelayPercent'] as num?)?.toInt(),
-      frozenRatioPercent: (json['frozenRatioPercent'] as num?)?.toInt(),
-      lossRatePercent: (json['lossRatePercent'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$WlAccStatsToJson(WlAccStats instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('e2eDelayPercent', instance.e2eDelayPercent);
-  writeNotNull('frozenRatioPercent', instance.frozenRatioPercent);
-  writeNotNull('lossRatePercent', instance.lossRatePercent);
-  return val;
-}
-
 VideoCanvas _$VideoCanvasFromJson(Map<String, dynamic> json) => VideoCanvas(
       uid: (json['uid'] as num?)?.toInt(),
       subviewUid: (json['subviewUid'] as num?)?.toInt(),
-      view: (json['view'] as num?)?.toInt(),
+      view: (readIntPtr(json, 'view') as num?)?.toInt(),
       backgroundColor: (json['backgroundColor'] as num?)?.toInt(),
       renderMode:
           $enumDecodeNullable(_$RenderModeTypeEnumMap, json['renderMode']),
@@ -1339,6 +1640,111 @@ const _$LighteningContrastLevelEnumMap = {
   LighteningContrastLevel.lighteningContrastHigh: 2,
 };
 
+FaceShapeAreaOptions _$FaceShapeAreaOptionsFromJson(
+        Map<String, dynamic> json) =>
+    FaceShapeAreaOptions(
+      shapeArea: $enumDecodeNullable(_$FaceShapeAreaEnumMap, json['shapeArea']),
+      shapeIntensity: (json['shapeIntensity'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$FaceShapeAreaOptionsToJson(
+    FaceShapeAreaOptions instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('shapeArea', _$FaceShapeAreaEnumMap[instance.shapeArea]);
+  writeNotNull('shapeIntensity', instance.shapeIntensity);
+  return val;
+}
+
+const _$FaceShapeAreaEnumMap = {
+  FaceShapeArea.faceShapeAreaNone: -1,
+  FaceShapeArea.faceShapeAreaHeadscale: 100,
+  FaceShapeArea.faceShapeAreaForehead: 101,
+  FaceShapeArea.faceShapeAreaFacecontour: 102,
+  FaceShapeArea.faceShapeAreaFacelength: 103,
+  FaceShapeArea.faceShapeAreaFacewidth: 104,
+  FaceShapeArea.faceShapeAreaCheekbone: 105,
+  FaceShapeArea.faceShapeAreaCheek: 106,
+  FaceShapeArea.faceShapeAreaMandible: 107,
+  FaceShapeArea.faceShapeAreaChin: 108,
+  FaceShapeArea.faceShapeAreaEyescale: 200,
+  FaceShapeArea.faceShapeAreaEyedistance: 201,
+  FaceShapeArea.faceShapeAreaEyeposition: 202,
+  FaceShapeArea.faceShapeAreaLowereyelid: 203,
+  FaceShapeArea.faceShapeAreaEyepupils: 204,
+  FaceShapeArea.faceShapeAreaEyeinnercorner: 205,
+  FaceShapeArea.faceShapeAreaEyeoutercorner: 206,
+  FaceShapeArea.faceShapeAreaNoselength: 300,
+  FaceShapeArea.faceShapeAreaNosewidth: 301,
+  FaceShapeArea.faceShapeAreaNosewing: 302,
+  FaceShapeArea.faceShapeAreaNoseroot: 303,
+  FaceShapeArea.faceShapeAreaNosebridge: 304,
+  FaceShapeArea.faceShapeAreaNosetip: 305,
+  FaceShapeArea.faceShapeAreaNosegeneral: 306,
+  FaceShapeArea.faceShapeAreaMouthscale: 400,
+  FaceShapeArea.faceShapeAreaMouthposition: 401,
+  FaceShapeArea.faceShapeAreaMouthsmile: 402,
+  FaceShapeArea.faceShapeAreaMouthlip: 403,
+  FaceShapeArea.faceShapeAreaEyebrowposition: 500,
+  FaceShapeArea.faceShapeAreaEyebrowthickness: 501,
+};
+
+FaceShapeBeautyOptions _$FaceShapeBeautyOptionsFromJson(
+        Map<String, dynamic> json) =>
+    FaceShapeBeautyOptions(
+      shapeStyle: $enumDecodeNullable(
+          _$FaceShapeBeautyStyleEnumMap, json['shapeStyle']),
+      styleIntensity: (json['styleIntensity'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$FaceShapeBeautyOptionsToJson(
+    FaceShapeBeautyOptions instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull(
+      'shapeStyle', _$FaceShapeBeautyStyleEnumMap[instance.shapeStyle]);
+  writeNotNull('styleIntensity', instance.styleIntensity);
+  return val;
+}
+
+const _$FaceShapeBeautyStyleEnumMap = {
+  FaceShapeBeautyStyle.faceShapeBeautyStyleFemale: 0,
+  FaceShapeBeautyStyle.faceShapeBeautyStyleMale: 1,
+  FaceShapeBeautyStyle.faceShapeBeautyStyleNatural: 2,
+};
+
+FilterEffectOptions _$FilterEffectOptionsFromJson(Map<String, dynamic> json) =>
+    FilterEffectOptions(
+      path: json['path'] as String?,
+      strength: (json['strength'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$FilterEffectOptionsToJson(FilterEffectOptions instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('path', instance.path);
+  writeNotNull('strength', instance.strength);
+  return val;
+}
+
 LowlightEnhanceOptions _$LowlightEnhanceOptionsFromJson(
         Map<String, dynamic> json) =>
     LowlightEnhanceOptions(
@@ -1401,7 +1807,6 @@ const _$VideoDenoiserModeEnumMap = {
 const _$VideoDenoiserLevelEnumMap = {
   VideoDenoiserLevel.videoDenoiserLevelHighQuality: 0,
   VideoDenoiserLevel.videoDenoiserLevelFast: 1,
-  VideoDenoiserLevel.videoDenoiserLevelStrength: 2,
 };
 
 ColorEnhanceOptions _$ColorEnhanceOptionsFromJson(Map<String, dynamic> json) =>
@@ -1473,6 +1878,8 @@ SegmentationProperty _$SegmentationPropertyFromJson(
     SegmentationProperty(
       modelType: $enumDecodeNullable(_$SegModelTypeEnumMap, json['modelType']),
       greenCapacity: (json['greenCapacity'] as num?)?.toDouble(),
+      screenColorType: $enumDecodeNullable(
+          _$ScreenColorTypeEnumMap, json['screenColorType']),
     );
 
 Map<String, dynamic> _$SegmentationPropertyToJson(
@@ -1487,6 +1894,8 @@ Map<String, dynamic> _$SegmentationPropertyToJson(
 
   writeNotNull('modelType', _$SegModelTypeEnumMap[instance.modelType]);
   writeNotNull('greenCapacity', instance.greenCapacity);
+  writeNotNull(
+      'screenColorType', _$ScreenColorTypeEnumMap[instance.screenColorType]);
   return val;
 }
 
@@ -1495,9 +1904,16 @@ const _$SegModelTypeEnumMap = {
   SegModelType.segModelGreen: 2,
 };
 
+const _$ScreenColorTypeEnumMap = {
+  ScreenColorType.screenColorAuto: 0,
+  ScreenColorType.screenColorGreen: 1,
+  ScreenColorType.screenColorBlue: 2,
+};
+
 AudioTrackConfig _$AudioTrackConfigFromJson(Map<String, dynamic> json) =>
     AudioTrackConfig(
       enableLocalPlayback: json['enableLocalPlayback'] as bool?,
+      enableAudioProcessing: json['enableAudioProcessing'] as bool?,
     );
 
 Map<String, dynamic> _$AudioTrackConfigToJson(AudioTrackConfig instance) {
@@ -1510,12 +1926,45 @@ Map<String, dynamic> _$AudioTrackConfigToJson(AudioTrackConfig instance) {
   }
 
   writeNotNull('enableLocalPlayback', instance.enableLocalPlayback);
+  writeNotNull('enableAudioProcessing', instance.enableAudioProcessing);
+  return val;
+}
+
+ScreenAudioParameters _$ScreenAudioParametersFromJson(
+        Map<String, dynamic> json) =>
+    ScreenAudioParameters(
+      sampleRate: (json['sampleRate'] as num?)?.toInt(),
+      channels: (json['channels'] as num?)?.toInt(),
+      captureSignalVolume: (json['captureSignalVolume'] as num?)?.toInt(),
+      excludeCurrentProcessAudio: json['excludeCurrentProcessAudio'] as bool?,
+    );
+
+Map<String, dynamic> _$ScreenAudioParametersToJson(
+    ScreenAudioParameters instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('sampleRate', instance.sampleRate);
+  writeNotNull('channels', instance.channels);
+  writeNotNull('captureSignalVolume', instance.captureSignalVolume);
+  writeNotNull(
+      'excludeCurrentProcessAudio', instance.excludeCurrentProcessAudio);
   return val;
 }
 
 ScreenCaptureParameters _$ScreenCaptureParametersFromJson(
         Map<String, dynamic> json) =>
     ScreenCaptureParameters(
+      captureAudio: json['captureAudio'] as bool?,
+      audioParams: json['audioParams'] == null
+          ? null
+          : ScreenAudioParameters.fromJson(
+              json['audioParams'] as Map<String, dynamic>),
       dimensions: json['dimensions'] == null
           ? null
           : VideoDimensions.fromJson(
@@ -1524,9 +1973,10 @@ ScreenCaptureParameters _$ScreenCaptureParametersFromJson(
       bitrate: (json['bitrate'] as num?)?.toInt(),
       captureMouseCursor: json['captureMouseCursor'] as bool?,
       windowFocus: json['windowFocus'] as bool?,
-      excludeWindowList: (json['excludeWindowList'] as List<dynamic>?)
-          ?.map((e) => (e as num).toInt())
-          .toList(),
+      excludeWindowList:
+          (readIntPtrList(json, 'excludeWindowList') as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList(),
       excludeWindowCount: (json['excludeWindowCount'] as num?)?.toInt(),
       highLightWidth: (json['highLightWidth'] as num?)?.toInt(),
       highLightColor: (json['highLightColor'] as num?)?.toInt(),
@@ -1543,6 +1993,8 @@ Map<String, dynamic> _$ScreenCaptureParametersToJson(
     }
   }
 
+  writeNotNull('captureAudio', instance.captureAudio);
+  writeNotNull('audioParams', instance.audioParams?.toJson());
   writeNotNull('dimensions', instance.dimensions?.toJson());
   writeNotNull('frameRate', instance.frameRate);
   writeNotNull('bitrate', instance.bitrate);
@@ -1830,7 +2282,7 @@ const _$EncryptionModeEnumMap = {
 EchoTestConfiguration _$EchoTestConfigurationFromJson(
         Map<String, dynamic> json) =>
     EchoTestConfiguration(
-      view: (json['view'] as num?)?.toInt(),
+      view: (readIntPtr(json, 'view') as num?)?.toInt(),
       enableAudio: json['enableAudio'] as bool?,
       enableVideo: json['enableVideo'] as bool?,
       token: json['token'] as String?,
@@ -1911,30 +2363,6 @@ const _$VideoContentHintEnumMap = {
   VideoContentHint.contentHintMotion: 1,
   VideoContentHint.contentHintDetails: 2,
 };
-
-ScreenAudioParameters _$ScreenAudioParametersFromJson(
-        Map<String, dynamic> json) =>
-    ScreenAudioParameters(
-      sampleRate: (json['sampleRate'] as num?)?.toInt(),
-      channels: (json['channels'] as num?)?.toInt(),
-      captureSignalVolume: (json['captureSignalVolume'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$ScreenAudioParametersToJson(
-    ScreenAudioParameters instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('sampleRate', instance.sampleRate);
-  writeNotNull('channels', instance.channels);
-  writeNotNull('captureSignalVolume', instance.captureSignalVolume);
-  return val;
-}
 
 ScreenCaptureParameters2 _$ScreenCaptureParameters2FromJson(
         Map<String, dynamic> json) =>
@@ -2098,6 +2526,7 @@ RecorderStreamInfo _$RecorderStreamInfoFromJson(Map<String, dynamic> json) =>
     RecorderStreamInfo(
       channelId: json['channelId'] as String?,
       uid: (json['uid'] as num?)?.toInt(),
+      type: $enumDecodeNullable(_$RecorderStreamTypeEnumMap, json['type']),
     );
 
 Map<String, dynamic> _$RecorderStreamInfoToJson(RecorderStreamInfo instance) {
@@ -2111,8 +2540,14 @@ Map<String, dynamic> _$RecorderStreamInfoToJson(RecorderStreamInfo instance) {
 
   writeNotNull('channelId', instance.channelId);
   writeNotNull('uid', instance.uid);
+  writeNotNull('type', _$RecorderStreamTypeEnumMap[instance.type]);
   return val;
 }
+
+const _$RecorderStreamTypeEnumMap = {
+  RecorderStreamType.rtc: 0,
+  RecorderStreamType.preview: 1,
+};
 
 SpatialAudioParams _$SpatialAudioParamsFromJson(Map<String, dynamic> json) =>
     SpatialAudioParams(
@@ -2214,6 +2649,7 @@ const _$WarnCodeTypeEnumMap = {
   WarnCodeType.warnApmHowling: 1051,
   WarnCodeType.warnAdmGlitchState: 1052,
   WarnCodeType.warnAdmImproperSettings: 1053,
+  WarnCodeType.warnAdmPopState: 1055,
   WarnCodeType.warnAdmWinCoreNoRecordingDevice: 1322,
   WarnCodeType.warnAdmWinCoreNoPlayoutDevice: 1323,
   WarnCodeType.warnAdmWinCoreImproperCaptureRelease: 1324,
@@ -2241,6 +2677,7 @@ const _$ErrorCodeTypeEnumMap = {
   ErrorCodeType.errAborted: 20,
   ErrorCodeType.errInitNetEngine: 21,
   ErrorCodeType.errResourceLimited: 22,
+  ErrorCodeType.errFuncIsProhibited: 23,
   ErrorCodeType.errInvalidAppId: 101,
   ErrorCodeType.errInvalidChannelName: 102,
   ErrorCodeType.errNoServerResources: 103,
@@ -2276,6 +2713,12 @@ const _$ErrorCodeTypeEnumMap = {
   ErrorCodeType.errCertRequest: 168,
   ErrorCodeType.errPcmsendFormat: 200,
   ErrorCodeType.errPcmsendBufferoverflow: 201,
+  ErrorCodeType.errRdtUserNotExist: 250,
+  ErrorCodeType.errRdtUserNotReady: 251,
+  ErrorCodeType.errRdtDataBlocked: 252,
+  ErrorCodeType.errRdtCmdExceedLimit: 253,
+  ErrorCodeType.errRdtDataExceedLimit: 254,
+  ErrorCodeType.errRdtEncryption: 255,
   ErrorCodeType.errLoginAlreadyLogin: 428,
   ErrorCodeType.errLoadMediaEngine: 1001,
   ErrorCodeType.errAdmGeneralError: 1005,
@@ -2381,6 +2824,26 @@ const _$MaxUserAccountLengthTypeEnumMap = {
   MaxUserAccountLengthType.maxUserAccountLength: 256,
 };
 
+const _$CameraFormatTypeEnumMap = {
+  CameraFormatType.cameraFormatNv12: 0,
+  CameraFormatType.cameraFormatBgra: 1,
+};
+
+const _$VideoModuleTypeEnumMap = {
+  VideoModuleType.videoModuleCapturer: 0,
+  VideoModuleType.videoModuleSoftwareEncoder: 1,
+  VideoModuleType.videoModuleHardwareEncoder: 2,
+  VideoModuleType.videoModuleSoftwareDecoder: 3,
+  VideoModuleType.videoModuleHardwareDecoder: 4,
+  VideoModuleType.videoModuleRenderer: 5,
+};
+
+const _$HdrCapabilityEnumMap = {
+  HdrCapability.hdrCapabilityUnknown: -1,
+  HdrCapability.hdrCapabilityUnsupported: 0,
+  HdrCapability.hdrCapabilitySupported: 1,
+};
+
 const _$CodecCapMaskEnumMap = {
   CodecCapMask.codecCapMaskNone: 0,
   CodecCapMask.codecCapMaskHwDec: 1,
@@ -2393,6 +2856,22 @@ const _$SimulcastStreamModeEnumMap = {
   SimulcastStreamMode.autoSimulcastStream: -1,
   SimulcastStreamMode.disableSimulcastStream: 0,
   SimulcastStreamMode.enableSimulcastStream: 1,
+};
+
+const _$StreamLayerIndexEnumMap = {
+  StreamLayerIndex.streamLayer1: 0,
+  StreamLayerIndex.streamLayer2: 1,
+  StreamLayerIndex.streamLayer3: 2,
+  StreamLayerIndex.streamLayer4: 3,
+  StreamLayerIndex.streamLayer5: 4,
+  StreamLayerIndex.streamLayer6: 5,
+  StreamLayerIndex.streamLow: 6,
+  StreamLayerIndex.streamLayerCountMax: 7,
+};
+
+const _$MultipathModeEnumMap = {
+  MultipathMode.duplicate: 0,
+  MultipathMode.dynamic: 1,
 };
 
 const _$ClientRoleTypeEnumMap = {
@@ -2442,7 +2921,9 @@ const _$AudioScenarioTypeEnumMap = {
   AudioScenarioType.audioScenarioChatroom: 5,
   AudioScenarioType.audioScenarioChorus: 7,
   AudioScenarioType.audioScenarioMeeting: 8,
-  AudioScenarioType.audioScenarioNum: 9,
+  AudioScenarioType.audioScenarioAiServer: 9,
+  AudioScenarioType.audioScenarioAiClient: 10,
+  AudioScenarioType.audioScenarioNum: 11,
 };
 
 const _$ScreenScenarioTypeEnumMap = {
@@ -2455,6 +2936,8 @@ const _$ScreenScenarioTypeEnumMap = {
 const _$VideoApplicationScenarioTypeEnumMap = {
   VideoApplicationScenarioType.applicationScenarioGeneral: 0,
   VideoApplicationScenarioType.applicationScenarioMeeting: 1,
+  VideoApplicationScenarioType.applicationScenario1v1: 2,
+  VideoApplicationScenarioType.applicationScenarioLiveshow: 3,
 };
 
 const _$VideoQoePreferenceTypeEnumMap = {
@@ -2508,6 +2991,14 @@ const _$LocalVideoStreamStateEnumMap = {
   LocalVideoStreamState.localVideoStreamStateFailed: 3,
 };
 
+const _$LocalVideoEventTypeEnumMap = {
+  LocalVideoEventType.localVideoEventTypeScreenCaptureWindowHidden: 1,
+  LocalVideoEventType.localVideoEventTypeScreenCaptureWindowRecoverFromHidden:
+      2,
+  LocalVideoEventType.localVideoEventTypeScreenCaptureStoppedByUser: 3,
+  LocalVideoEventType.localVideoEventTypeScreenCaptureSystemInternalError: 4,
+};
+
 const _$LocalVideoStreamReasonEnumMap = {
   LocalVideoStreamReason.localVideoStreamReasonOk: 0,
   LocalVideoStreamReason.localVideoStreamReasonFailure: 1,
@@ -2538,6 +3029,14 @@ const _$LocalVideoStreamReasonEnumMap = {
       .localVideoStreamReasonScreenCaptureWindowRecoverFromMinimized: 27,
   LocalVideoStreamReason.localVideoStreamReasonScreenCapturePaused: 28,
   LocalVideoStreamReason.localVideoStreamReasonScreenCaptureResumed: 29,
+  LocalVideoStreamReason.localVideoStreamReasonScreenCaptureDisplayDisconnected:
+      30,
+  LocalVideoStreamReason.localVideoStreamReasonScreenCaptureStoppedByUser: 31,
+  LocalVideoStreamReason.localVideoStreamReasonScreenCaptureInterruptedByOther:
+      32,
+  LocalVideoStreamReason.localVideoStreamReasonScreenCaptureStoppedByCall: 33,
+  LocalVideoStreamReason.localVideoStreamReasonScreenCaptureExcludeWindowFailed:
+      34,
 };
 
 const _$RemoteAudioStateEnumMap = {
@@ -2681,18 +3180,6 @@ const _$ClientRoleChangeFailedReasonEnumMap = {
   ClientRoleChangeFailedReason.clientRoleChangeFailedConnectionFailed: 4,
 };
 
-const _$WlaccMessageReasonEnumMap = {
-  WlaccMessageReason.wlaccMessageReasonWeakSignal: 0,
-  WlaccMessageReason.wlaccMessageReasonChannelCongestion: 1,
-};
-
-const _$WlaccSuggestActionEnumMap = {
-  WlaccSuggestAction.wlaccSuggestActionCloseToWifi: 0,
-  WlaccSuggestAction.wlaccSuggestActionConnectSsid: 1,
-  WlaccSuggestAction.wlaccSuggestActionCheck5g: 2,
-  WlaccSuggestAction.wlaccSuggestActionModifySsid: 3,
-};
-
 const _$NetworkTypeEnumMap = {
   NetworkType.networkTypeUnknown: -1,
   NetworkType.networkTypeDisconnected: 0,
@@ -2776,6 +3263,19 @@ const _$HeadphoneEqualizerPresetEnumMap = {
   HeadphoneEqualizerPreset.headphoneEqualizerInear: 67108866,
 };
 
+const _$VoiceAiTunerTypeEnumMap = {
+  VoiceAiTunerType.voiceAiTunerMatureMale: 0,
+  VoiceAiTunerType.voiceAiTunerFreshMale: 1,
+  VoiceAiTunerType.voiceAiTunerElegantFemale: 2,
+  VoiceAiTunerType.voiceAiTunerSweetFemale: 3,
+  VoiceAiTunerType.voiceAiTunerWarmMaleSinging: 4,
+  VoiceAiTunerType.voiceAiTunerGentleFemaleSinging: 5,
+  VoiceAiTunerType.voiceAiTunerHuskyMaleSinging: 6,
+  VoiceAiTunerType.voiceAiTunerWarmElegantFemaleSinging: 7,
+  VoiceAiTunerType.voiceAiTunerPowerfulMaleSinging: 8,
+  VoiceAiTunerType.voiceAiTunerDreamyFemaleSinging: 9,
+};
+
 const _$AreaCodeEnumMap = {
   AreaCode.areaCodeCn: 1,
   AreaCode.areaCodeNa: 2,
@@ -2793,6 +3293,7 @@ const _$AreaCodeExEnumMap = {
   AreaCodeEx.areaCodeKr: 512,
   AreaCodeEx.areaCodeHkmc: 1024,
   AreaCodeEx.areaCodeUs: 2048,
+  AreaCodeEx.areaCodeRu: 4096,
   AreaCodeEx.areaCodeOvs: 4294967294,
 };
 
@@ -2830,6 +3331,16 @@ const _$UploadErrorReasonEnumMap = {
   UploadErrorReason.uploadSuccess: 0,
   UploadErrorReason.uploadNetError: 1,
   UploadErrorReason.uploadServerError: 2,
+};
+
+const _$RenewTokenErrorCodeEnumMap = {
+  RenewTokenErrorCode.renewTokenSuccess: 0,
+  RenewTokenErrorCode.renewTokenFailure: 1,
+  RenewTokenErrorCode.renewTokenTokenExpired: 2,
+  RenewTokenErrorCode.renewTokenInvalidToken: 3,
+  RenewTokenErrorCode.renewTokenInvalidChannelName: 4,
+  RenewTokenErrorCode.renewTokenInconsistentAppid: 5,
+  RenewTokenErrorCode.renewTokenCanceledByNewRequest: 6,
 };
 
 const _$PermissionTypeEnumMap = {
@@ -2876,4 +3387,18 @@ const _$MediaTraceEventEnumMap = {
 const _$ConfigFetchTypeEnumMap = {
   ConfigFetchType.configFetchTypeInitialize: 1,
   ConfigFetchType.configFetchTypeJoinChannel: 2,
+};
+
+const _$RdtStreamTypeEnumMap = {
+  RdtStreamType.rdtStreamCmd: 0,
+  RdtStreamType.rdtStreamData: 1,
+  RdtStreamType.rdtStreamCount: 2,
+};
+
+const _$RdtStateEnumMap = {
+  RdtState.rdtStateClosed: 0,
+  RdtState.rdtStateOpened: 1,
+  RdtState.rdtStateBlocked: 2,
+  RdtState.rdtStatePending: 3,
+  RdtState.rdtStateBroken: 4,
 };

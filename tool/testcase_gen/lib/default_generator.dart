@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_style/dart_style.dart';
-import 'package:paraphrase/paraphrase.dart';
+import 'package:testcase_gen/core/paraphrase.dart';
 import 'package:testcase_gen/generator.dart';
 import 'package:meta/meta.dart';
 
@@ -144,7 +144,7 @@ ${listInitializerBuilder.toString()}
       isNullable = true;
       initBlockBuilder.write('null');
     } else {
-      final constructor = parameterClass.constructors[0];
+      // final constructor = parameterClass.constructors[0];
 
       initBlockBuilder.write(parameterClass.name);
       initBlockBuilder.write('(');

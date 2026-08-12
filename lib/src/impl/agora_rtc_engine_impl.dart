@@ -2,44 +2,41 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agora_rtc_engine/src/agora_base.dart';
-import 'package:agora_rtc_engine/src/agora_h265_transcoder.dart';
-import 'package:agora_rtc_engine/src/agora_media_base.dart';
-import 'package:agora_rtc_engine/src/agora_media_engine.dart';
-import 'package:agora_rtc_engine/src/agora_media_player.dart';
-import 'package:agora_rtc_engine/src/agora_media_recorder.dart';
-import 'package:agora_rtc_engine/src/agora_music_content_center.dart';
-import 'package:agora_rtc_engine/src/agora_rtc_engine.dart';
-import 'package:agora_rtc_engine/src/agora_rtc_engine_ex.dart';
-import 'package:agora_rtc_engine/src/agora_rtc_engine_ext.dart';
-import 'package:agora_rtc_engine/src/agora_spatial_audio.dart';
-import 'package:agora_rtc_engine/src/audio_device_manager.dart';
-import 'package:agora_rtc_engine/src/binding/agora_base_event_impl.dart';
-import 'package:agora_rtc_engine/src/binding/agora_media_base_event_impl.dart';
-import 'package:agora_rtc_engine/src/binding/agora_media_engine_impl.dart';
-import 'package:agora_rtc_engine/src/binding/agora_rtc_engine_event_impl.dart';
-import 'package:agora_rtc_engine/src/binding/agora_rtc_engine_ex_impl.dart'
-    as rtc_engine_ex_binding;
-import 'package:agora_rtc_engine/src/binding/agora_rtc_engine_impl.dart'
-    as rtc_engine_binding;
-import 'package:agora_rtc_engine/src/binding/agora_spatial_audio_impl.dart';
-import 'package:agora_rtc_engine/src/binding/call_api_event_handler_buffer_ext.dart';
-import 'package:agora_rtc_engine/src/binding/event_handler_param_json.dart';
-import 'package:agora_rtc_engine/src/impl/agora_h265_transcoder_impl_override.dart';
-import 'package:agora_rtc_engine/src/impl/agora_media_engine_impl_override.dart'
-    as media_engine_impl;
-import 'package:agora_rtc_engine/src/impl/agora_media_recorder_impl_override.dart'
-    as media_recorder_impl;
-import 'package:agora_rtc_engine/src/impl/agora_music_content_center_impl_override.dart'
-    as mcci;
-import 'package:agora_rtc_engine/src/impl/agora_spatial_audio_impl_override.dart'
-    as agora_spatial_audio_impl;
-import 'package:agora_rtc_engine/src/impl/audio_device_manager_impl.dart'
-    as audio_device_manager_impl;
-import 'package:agora_rtc_engine/src/impl/media_player_impl.dart'
-    as media_player_impl;
+import 'package:agora_rtc_engine/src/impl/channel_connection_manager.dart';
 
-import 'package:agora_rtc_engine/src/impl/platform/platform_bindings_provider.dart';
+import '/src/agora_base.dart';
+import '/src/agora_h265_transcoder.dart';
+import '/src/agora_media_base.dart';
+import '/src/agora_media_engine.dart';
+import '/src/agora_media_player.dart';
+import '/src/agora_media_recorder.dart';
+import '/src/agora_music_content_center.dart';
+import '/src/agora_rtc_engine.dart';
+import '/src/agora_rtc_engine_ex.dart';
+import '/src/agora_rtc_engine_ext.dart';
+import '/src/agora_spatial_audio.dart';
+import '/src/audio_device_manager.dart';
+import '/src/binding/agora_base_event_impl.dart';
+import '/src/binding/agora_media_base_event_impl.dart';
+import '/src/binding/agora_media_engine_impl.dart';
+import '/src/binding/agora_rtc_engine_event_impl.dart';
+import '/src/binding/agora_rtc_engine_ex_impl.dart' as rtc_engine_ex_binding;
+import '/src/binding/agora_rtc_engine_impl.dart' as rtc_engine_binding;
+import '/src/binding/agora_spatial_audio_impl.dart';
+import '/src/binding/call_api_event_handler_buffer_ext.dart';
+import '/src/binding/event_handler_param_json.dart';
+import '/src/impl/agora_h265_transcoder_impl_override.dart';
+import '/src/impl/agora_media_engine_impl_override.dart' as media_engine_impl;
+import '/src/impl/agora_media_recorder_impl_override.dart'
+    as media_recorder_impl;
+import '/src/impl/agora_music_content_center_impl_override.dart' as mcci;
+import '/src/impl/agora_spatial_audio_impl_override.dart'
+    as agora_spatial_audio_impl;
+import '/src/impl/audio_device_manager_impl.dart' as audio_device_manager_impl;
+import '/src/impl/media_player_impl.dart' as media_player_impl;
+import '/src/impl/video_effect_object_impl.dart' as video_effect_object_impl;
+
+import '/src/impl/platform/platform_bindings_provider.dart';
 import 'package:async/async.dart' show AsyncMemoizer;
 import 'package:flutter/foundation.dart'
     show
@@ -48,9 +45,10 @@ import 'package:flutter/foundation.dart'
         defaultTargetPlatform,
         kIsWeb,
         visibleForTesting;
-import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter/services.dart' show MethodCall, MethodChannel;
 import 'package:flutter/widgets.dart' show VoidCallback, TargetPlatform;
 import 'package:iris_method_channel/iris_method_channel.dart';
+import '/src/impl/video_rendering_performance_uploader.dart';
 import 'package:meta/meta.dart';
 
 import 'platform/global_video_view_controller.dart';
@@ -300,6 +298,79 @@ extension MetadataObserverExt on MetadataObserver {
   }
 }
 
+class _RtcEngineEventHandlerWrapper extends RtcEngineEventHandlerWrapper {
+  _RtcEngineEventHandlerWrapper(RtcEngineEventHandler rtcEngineEventHandler)
+      : super(rtcEngineEventHandler);
+
+  @override
+  bool handleEventInternal(
+      String eventName, String eventData, List<Uint8List> buffers) {
+    switch (eventName) {
+      case 'onJoinChannelSuccess_263e4cd':
+      case 'onRejoinChannelSuccess_263e4cd':
+        final Map jsonMap = jsonDecode(eventData);
+        RtcEngineEventHandlerOnJoinChannelSuccessJson paramJson =
+            RtcEngineEventHandlerOnJoinChannelSuccessJson.fromJson(
+                jsonMap.cast<String, dynamic>());
+        RtcConnection? connection = paramJson.connection;
+        if (connection != null) {
+          ChannelConnectionManager.instance.addConnection(connection);
+        }
+        break;
+      case 'onLeaveChannel_c8e730d':
+        final Map jsonMap = jsonDecode(eventData);
+        RtcEngineEventHandlerOnLeaveChannelJson paramJson =
+            RtcEngineEventHandlerOnLeaveChannelJson.fromJson(
+                jsonMap.cast<String, dynamic>());
+        RtcConnection? connection = paramJson.connection;
+        if (connection?.channelId != null) {
+          PerformanceDataCollector.instance.clearChannelData(
+              connection!.channelId!, connection.localUid ?? 0);
+          // removeConnection will automatically trigger cleanup if all channels are left
+          ChannelConnectionManager.instance
+              .removeConnection(connection.channelId!);
+        }
+        break;
+      case 'onLocalVideoStats_0cebfd7':
+        final Map jsonMap = jsonDecode(eventData);
+        RtcEngineEventHandlerOnLocalVideoStatsJson paramJson =
+            RtcEngineEventHandlerOnLocalVideoStatsJson.fromJson(
+                jsonMap.cast<String, dynamic>());
+        RtcConnection? connection = paramJson.connection;
+        VideoSourceType? sourceType = paramJson.sourceType;
+        if (connection != null && sourceType != null) {
+          ChannelConnectionManager.instance
+              .setPublishingVideoConnectionBySource(sourceType, connection);
+        }
+        break;
+      case 'onRemoteVideoStats_2f43a70':
+        final Map jsonMap = jsonDecode(eventData);
+        RtcEngineEventHandlerOnRemoteVideoStatsJson paramJson =
+            RtcEngineEventHandlerOnRemoteVideoStatsJson.fromJson(
+                jsonMap.cast<String, dynamic>());
+        RtcConnection? connection = paramJson.connection;
+        if (connection != null) {
+          ChannelConnectionManager.instance.addConnection(connection);
+        }
+        break;
+    }
+
+    return super.handleEventInternal(eventName, eventData, buffers);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is _RtcEngineEventHandlerWrapper &&
+        other.rtcEngineEventHandler == rtcEngineEventHandler;
+  }
+
+  @override
+  int get hashCode => rtcEngineEventHandler.hashCode;
+}
+
 @internal
 class InitializationState extends ChangeNotifier {
   bool _isInitialzed = false;
@@ -367,7 +438,26 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
   @internal
   late MethodChannel engineMethodChannel;
 
+  @internal
+  Map<String, List<Future<dynamic> Function(MethodCall call)>>
+      methodChannelHandlers = {};
+
   AsyncMemoizer? _initializeCallOnce;
+
+  bool? _enableArgusCounters =
+      true; // Default to true for backward compatibility
+  bool get enableArgusCounters => _enableArgusCounters ?? true;
+
+  /// Set whether to enable Argus counters for texture rendering performance statistics.
+  /// This should be called after initialize() if you want to change the default value.
+  ///
+  /// [enabled] true: Enable Argus counters (default). When using texture rendering,
+  ///           performance data will be collected and uploaded.
+  ///           false: Disable Argus counters. No performance data will be collected
+  ///           or uploaded when using texture rendering.
+  void setEnableArgusCounters(bool enabled) {
+    _enableArgusCounters = enabled;
+  }
 
   static RtcEngineEx create({
     Object? sharedNativeHandle,
@@ -438,6 +528,16 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
         await engineMethodChannel.invokeMethod('androidInit');
       }
 
+      engineMethodChannel.setMethodCallHandler((call) async {
+        try {
+          methodChannelHandlers[call.method]?.forEach((handler) async {
+            await handler(call);
+          });
+        } catch (e) {
+          assert(false, 'methodChannel error: $e');
+        }
+      });
+
       List<InitilizationArgProvider> args = [
         if (_sharedNativeHandle != null)
           SharedNativeHandleInitilizationArgProvider(_sharedNativeHandle!)
@@ -453,12 +553,17 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
       await _initializeInternal(context);
     });
 
+    // Note: enableArgusCounters cannot be added to RtcEngineContext as it's auto-generated
+    // It will be set via setEnableArgusCounters method if needed, default is true
+
     await super.initialize(context);
 
     await irisMethodChannel.invokeMethod(IrisMethodCall(
       'RtcEngine_setAppType',
       jsonEncode({'appType': 4}),
     ));
+
+    PerformanceDataCollector.instance.dispose();
 
     _rtcEngineState.isInitialzed = true;
     _isReleased = false;
@@ -499,6 +604,8 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
     _rtcEngineStateInternal?.dispose();
     _rtcEngineStateInternal = null;
 
+    PerformanceDataCollector.instance.dispose();
+
     await _objectPool.clear();
 
     await _globalVideoViewController
@@ -521,7 +628,7 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
   @override
   void registerEventHandler(
       covariant RtcEngineEventHandler eventHandler) async {
-    final eventHandlerWrapper = RtcEngineEventHandlerWrapper(eventHandler);
+    final eventHandlerWrapper = _RtcEngineEventHandlerWrapper(eventHandler);
     final param = createParams({});
 
     await irisMethodChannel.registerEventHandler(
@@ -536,7 +643,7 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
   @override
   void unregisterEventHandler(
       covariant RtcEngineEventHandler eventHandler) async {
-    final eventHandlerWrapper = RtcEngineEventHandlerWrapper(eventHandler);
+    final eventHandlerWrapper = _RtcEngineEventHandlerWrapper(eventHandler);
     final param = createParams({});
 
     await irisMethodChannel.unregisterEventHandler(
@@ -571,6 +678,51 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
     const apiType = 'RtcEngine_destroyMediaPlayer_328a49b';
     final playerId = mediaPlayer.getMediaPlayerId();
     final param = createParams({'playerId': playerId});
+    final callApiResult = await irisMethodChannel
+        .invokeMethod(IrisMethodCall(apiType, jsonEncode(param)));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
+  Future<VideoEffectObject?> createVideoEffectObject(
+      {required String bundlePath,
+      MediaSourceType type = MediaSourceType.primaryCameraSource}) async {
+    const apiType = 'RtcEngine_createVideoEffectObject_65bd50d';
+    final param =
+        createParams({'bundlePath': bundlePath, 'type': type.value()});
+    final callApiResult = await irisMethodChannel
+        .invokeMethod(IrisMethodCall(apiType, jsonEncode(param)));
+    if (callApiResult.irisReturnCode < 0) {
+      return null;
+    }
+    final rm = callApiResult.data;
+    // iris returns objectId (int) — the key in its internal object map.
+    // A negative value means failure.
+    final int objectId = rm['result'] as int;
+    if (objectId < 0) {
+      return null;
+    }
+    // Wrap the objectId so that every subsequent VideoEffectObject call
+    // injects it into the params, letting iris route to the right native object.
+    return video_effect_object_impl.VideoEffectObjectImpl.create(
+        objectId, irisMethodChannel);
+  }
+
+  @override
+  Future<void> destroyVideoEffectObject(
+      covariant VideoEffectObject videoEffectObject) async {
+    const apiType = 'RtcEngine_destroyVideoEffectObject_66d092b';
+    // Cast to our impl to extract the objectId for the iris call.
+    final impl =
+        videoEffectObject as video_effect_object_impl.VideoEffectObjectImpl;
+    final param = createParams({'objectId': impl.objectId});
     final callApiResult = await irisMethodChannel
         .invokeMethod(IrisMethodCall(apiType, jsonEncode(param)));
     if (callApiResult.irisReturnCode < 0) {
@@ -870,6 +1022,27 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
   }
 
   @override
+  Future<void> setDualStreamMode(
+      {required SimulcastStreamMode mode,
+      SimulcastStreamConfig? streamConfig}) async {
+    final apiType = streamConfig == null
+        ? 'RtcEngine_setDualStreamMode_3a7f662'
+        : 'RtcEngine_setDualStreamMode_b3a4f6c';
+    final param = createParams(
+        {'mode': mode.value(), 'streamConfig': streamConfig?.toJson()});
+    final callApiResult = await irisMethodChannel
+        .invokeMethod(IrisMethodCall(apiType, jsonEncode(param)));
+    if (callApiResult.irisReturnCode < 0) {
+      throw AgoraRtcException(code: callApiResult.irisReturnCode);
+    }
+    final rm = callApiResult.data;
+    final result = rm['result'];
+    if (result < 0) {
+      throw AgoraRtcException(code: result);
+    }
+  }
+
+  @override
   Future<void> joinChannelWithUserAccount(
       {required String token,
       required String channelId,
@@ -1035,6 +1208,40 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
     return p;
   }
 
+  int getApiEngineHandle() {
+    return irisMethodChannel.getApiEngineHandle();
+  }
+
+  @optionalTypeArgs
+  Future<T?> invokeAgoraMethod<T>(String method, [dynamic arguments]) {
+    return engineMethodChannel.invokeMethod<T>(method, arguments);
+  }
+
+  Future<void> registerMethodChannelHandler(
+    String method,
+    Future<dynamic> Function(MethodCall call) handler,
+  ) {
+    methodChannelHandlers[method] ??= [];
+    methodChannelHandlers[method]!.add(handler);
+
+    return Future.value();
+  }
+
+  Future<void> unregisterMethodChannelHandler(
+    String method,
+    Future<dynamic> Function(MethodCall call)? handler,
+  ) {
+    if (handler == null) {
+      methodChannelHandlers.remove(method);
+    } else {
+      methodChannelHandlers[method]?.remove(handler);
+      if (methodChannelHandlers[method]?.isEmpty == true) {
+        methodChannelHandlers.remove(method);
+      }
+    }
+
+    return Future.value();
+  }
   /////////// debug ////////
 
   /// [type] see [VideoSourceType], only [VideoSourceType.videoSourceCamera], [VideoSourceType.videoSourceRemote] supported

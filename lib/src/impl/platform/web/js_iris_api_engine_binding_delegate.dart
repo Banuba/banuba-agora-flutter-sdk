@@ -1,8 +1,8 @@
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:js_util';
+import 'dart:js_interop';
 
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
-import 'package:agora_rtc_engine/src/impl/platform/web/iris_web_rtc_bindings_js.dart';
+import '/src/binding_forward_export.dart';
+import '/src/impl/platform/web/iris_web_rtc_bindings_js.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 import 'package:iris_method_channel/iris_method_channel_bindings_web.dart'
     as js;
@@ -84,13 +84,14 @@ class IrisApiEngineBindingsDelegateJS
 
     if (_skipCalls.contains(methodCall.funcName)) {
       debugPrint('[callApiAsync]: ${methodCall.funcName} is skipped.');
-      return CallApiResult(irisReturnCode: 0, data: {'result': 0});
+      return CallApiResult(irisReturnCode: 0, data: const {'result': 0});
     }
 
-    final promiseFuture =
-        promiseToFuture(js.callIrisApi(nApiEnginePtr, nParam));
+    final jsPromise = (js.callIrisApi(nApiEnginePtr, nParam) as JSAny).dartify()
+        as Future<dynamic>;
 
-    final js.CallIrisApiResult irisApiResult = await promiseFuture;
+    final jsResult = await jsPromise;
+    final js.CallIrisApiResult irisApiResult = jsResult as js.CallIrisApiResult;
 
     return irisApiResult.toCallApiResult();
   }

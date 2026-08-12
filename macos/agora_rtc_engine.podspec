@@ -13,16 +13,22 @@ A new flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*.{h,mm}', 'Classes/File.swift'
+  s.source_files = 'agora_rtc_engine/Sources/**/*.{h,mm,swift}'
   s.dependency 'FlutterMacOS'
 
   plugin_dev_path = File.join(File.dirname(File.realpath(__FILE__)), '.plugin_dev')
   if File.exist?(plugin_dev_path)
     puts '[plugin_dev] Found .plugin_dev file, use vendored_frameworks instead.'
     s.vendored_frameworks = 'libs/*.xcframework', 'libs/*.framework'
+    s.dependency 'AgoraRtcEngine_macOS', '4.6.0'
   else
-  s.dependency 'AgoraRtcEngine_macOS', '4.3.2'
-  s.dependency 'AgoraIrisRTC_macOS', '4.3.2-build.1'
+    # iris dependencies start
+    s.dependency 'AgoraIrisRTC_macOS2', '4.6.2-build.1'
+    # iris dependencies end
+
+    # native dependencies start
+    s.dependency 'AgoraVideo_Special_macOS', '4.6.2.70'
+    # native dependencies end
   end
 
   s.platform = :osx, '10.11'

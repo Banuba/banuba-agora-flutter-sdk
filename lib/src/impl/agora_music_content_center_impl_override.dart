@@ -1,19 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:agora_rtc_engine/src/agora_music_content_center.dart';
-import 'package:agora_rtc_engine/src/agora_rtc_engine.dart';
-import 'package:agora_rtc_engine/src/agora_rtc_engine_ext.dart';
-import 'package:agora_rtc_engine/src/binding/agora_music_content_center_event_impl.dart'
+import '/src/agora_music_content_center.dart';
+import '/src/agora_rtc_engine.dart';
+import '/src/agora_rtc_engine_ext.dart';
+import '/src/binding/agora_music_content_center_event_impl.dart'
     as event_binding;
-import 'package:agora_rtc_engine/src/binding/agora_music_content_center_impl.dart'
-    as binding;
-import 'package:agora_rtc_engine/src/binding/event_handler_param_json.dart';
+import '/src/binding/agora_music_content_center_impl.dart' as binding;
+import '/src/binding/event_handler_param_json.dart';
 
-import 'package:agora_rtc_engine/src/impl/agora_music_content_center_impl_json.dart';
-import 'package:agora_rtc_engine/src/impl/agora_rtc_engine_impl.dart';
-import 'package:agora_rtc_engine/src/impl/media_player_impl.dart'
-    as media_player_impl;
+import '/src/impl/agora_music_content_center_impl_json.dart';
+import '/src/impl/agora_rtc_engine_impl.dart';
+import '/src/impl/media_player_impl.dart' as media_player_impl;
 import 'package:iris_method_channel/iris_method_channel.dart';
 
 class MusicCollectionImpl extends MusicCollection {
@@ -113,7 +111,7 @@ class MusicPlayerImpl extends media_player_impl.MediaPlayerImpl
   @override
   Future<void> setPlayMode(MusicPlayMode mode) async {
     final apiType =
-        '${isOverrideClassName ? className : 'MusicPlayer'}_setPlayMode';
+        '${isOverrideClassName ? className : 'MusicPlayer'}_setPlayMode_748bee0';
     final param = createParams({'mode': mode.value()});
     final callApiResult = await irisMethodChannel.invokeMethod(
         IrisMethodCall(apiType, jsonEncode(param), buffers: null));
@@ -169,7 +167,7 @@ class MusicContentCenterImpl extends binding.MusicContentCenterImpl
   @override
   Future<void> destroyMusicPlayer(MusicPlayer musicPlayer) async {
     final apiType =
-        '${isOverrideClassName ? className : 'MusicContentCenter'}_destroyMusicPlayer';
+        '${isOverrideClassName ? className : 'MusicContentCenter'}_destroyMusicPlayer_876d086';
     final param = createParams({'playerId': musicPlayer.getMediaPlayerId()});
     await irisMethodChannel.invokeMethod(
         IrisMethodCall(apiType, jsonEncode(param), buffers: null));

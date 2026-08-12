@@ -31,8 +31,7 @@ class _State extends State<SendMultiVideoStream> {
     super.initState();
     _channelIdController = TextEditingController(text: config.channelId);
     _textEditingController = TextEditingController(
-        text:
-            'https://agoracdn.s3.us-west-1.amazonaws.com/videos/Agora.io-Interactions.mp4');
+        text: 'https://download.agora.io/demo/test/Agora.io-Interactions.mp4');
     _initEngine();
   }
 
@@ -153,6 +152,14 @@ class _State extends State<SendMultiVideoStream> {
       ),
     );
 
+    // you should use one of the following methods to mute remote audio stream
+    // await _engine.muteRemoteAudioStream(uid: 456, mute: true);
+    await _engine.setSubscribeAudioBlocklistEx(
+        uidList: [456],
+        uidNumber: 1,
+        connection:
+            RtcConnection(channelId: _channelIdController.text, localUid: 123));
+
     await _engine.joinChannelEx(
       token: '',
       connection: RtcConnection(
@@ -164,6 +171,8 @@ class _State extends State<SendMultiVideoStream> {
         publishMediaPlayerAudioTrack: true,
         publishMediaPlayerVideoTrack: true,
         publishMediaPlayerId: _mediaPlayerController.getMediaPlayerId(),
+        autoSubscribeAudio: false,
+        autoSubscribeVideo: false,
       ),
     );
   }

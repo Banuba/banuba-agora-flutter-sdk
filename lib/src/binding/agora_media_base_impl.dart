@@ -2,8 +2,8 @@
 
 // ignore_for_file: public_member_api_docs, unused_local_variable, unused_import, annotate_overrides
 
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
-import 'package:agora_rtc_engine/src/binding/impl_forward_export.dart';
+import '/src/binding_forward_export.dart';
+import '/src/binding/impl_forward_export.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
 class VideoFrameMetaInfoImpl implements VideoFrameMetaInfo {
@@ -27,9 +27,9 @@ class VideoFrameMetaInfoImpl implements VideoFrameMetaInfo {
   Future<String> getMetaInfoStr(MetaInfoKey key) async {
     final apiType =
         '${isOverrideClassName ? className : 'VideoFrameMetaInfo'}_getMetaInfoStr_c81192f';
-    final param = createParams({'key': key.value()});
+    final requestParam = createParams({'key': key.value()});
     final callApiResult = await irisMethodChannel.invokeMethod(
-        IrisMethodCall(apiType, jsonEncode(param), buffers: null));
+        IrisMethodCall(apiType, jsonEncode(requestParam), buffers: null));
     if (callApiResult.irisReturnCode < 0) {
       throw AgoraRtcException(code: callApiResult.irisReturnCode);
     }

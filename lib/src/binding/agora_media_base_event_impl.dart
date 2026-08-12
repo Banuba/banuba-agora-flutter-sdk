@@ -2,8 +2,8 @@
 
 // ignore_for_file: public_member_api_docs, unused_local_variable, unused_import
 
-import 'package:agora_rtc_engine/src/binding_forward_export.dart';
-import 'package:agora_rtc_engine/src/binding/impl_forward_export.dart';
+import '/src/binding_forward_export.dart';
+import '/src/binding/impl_forward_export.dart';
 import 'package:iris_method_channel/iris_method_channel.dart';
 
 class AudioPcmFrameSinkWrapper implements EventLoopEventHandler {
@@ -49,12 +49,19 @@ class AudioPcmFrameSinkWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('AudioPcmFrameSink')) return false;
-    final newEvent = eventName.replaceFirst('AudioPcmFrameSink_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('AudioPcmFrameSink')) return false;
+      final newEvent = eventName.replaceFirst('AudioPcmFrameSink_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }
 
@@ -153,12 +160,19 @@ class AudioFrameObserverBaseWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('AudioFrameObserverBase')) return false;
-    final newEvent = eventName.replaceFirst('AudioFrameObserverBase_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('AudioFrameObserverBase')) return false;
+      final newEvent = eventName.replaceFirst('AudioFrameObserverBase_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }
 
@@ -210,12 +224,19 @@ class AudioFrameObserverWrapper extends AudioFrameObserverBaseWrapper {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('AudioFrameObserver')) return false;
-    final newEvent = eventName.replaceFirst('AudioFrameObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('AudioFrameObserver')) return false;
+      final newEvent = eventName.replaceFirst('AudioFrameObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return super.handleEventInternal(newEvent, eventData, buffers);
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return super.handleEventInternal(newEvent, eventData, buffers);
   }
 }
 
@@ -279,12 +300,19 @@ class AudioSpectrumObserverWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('AudioSpectrumObserver')) return false;
-    final newEvent = eventName.replaceFirst('AudioSpectrumObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('AudioSpectrumObserver')) return false;
+      final newEvent = eventName.replaceFirst('AudioSpectrumObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }
 
@@ -309,7 +337,7 @@ class VideoEncodedFrameObserverWrapper implements EventLoopEventHandler {
   bool handleEventInternal(
       String eventName, String eventData, List<Uint8List> buffers) {
     switch (eventName) {
-      case 'onEncodedVideoFrameReceived_6922697':
+      case 'onEncodedVideoFrameReceived_5f183eb':
         if (videoEncodedFrameObserver.onEncodedVideoFrameReceived == null) {
           return true;
         }
@@ -318,12 +346,14 @@ class VideoEncodedFrameObserverWrapper implements EventLoopEventHandler {
             VideoEncodedFrameObserverOnEncodedVideoFrameReceivedJson.fromJson(
                 jsonMap);
         paramJson = paramJson.fillBuffers(buffers);
+        String? channelId = paramJson.channelId;
         int? uid = paramJson.uid;
         Uint8List? imageBuffer = paramJson.imageBuffer;
         int? length = paramJson.length;
         EncodedVideoFrameInfo? videoEncodedFrameInfo =
             paramJson.videoEncodedFrameInfo;
-        if (uid == null ||
+        if (channelId == null ||
+            uid == null ||
             imageBuffer == null ||
             length == null ||
             videoEncodedFrameInfo == null) {
@@ -331,7 +361,7 @@ class VideoEncodedFrameObserverWrapper implements EventLoopEventHandler {
         }
         videoEncodedFrameInfo = videoEncodedFrameInfo.fillBuffers(buffers);
         videoEncodedFrameObserver.onEncodedVideoFrameReceived!(
-            uid, imageBuffer, length, videoEncodedFrameInfo);
+            channelId, uid, imageBuffer, length, videoEncodedFrameInfo);
         return true;
     }
     return false;
@@ -340,12 +370,19 @@ class VideoEncodedFrameObserverWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('VideoEncodedFrameObserver')) return false;
-    final newEvent = eventName.replaceFirst('VideoEncodedFrameObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('VideoEncodedFrameObserver')) return false;
+      final newEvent = eventName.replaceFirst('VideoEncodedFrameObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }
 
@@ -462,12 +499,19 @@ class VideoFrameObserverWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('VideoFrameObserver')) return false;
-    final newEvent = eventName.replaceFirst('VideoFrameObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('VideoFrameObserver')) return false;
+      final newEvent = eventName.replaceFirst('VideoFrameObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }
 
@@ -514,12 +558,19 @@ class FaceInfoObserverWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('FaceInfoObserver')) return false;
-    final newEvent = eventName.replaceFirst('FaceInfoObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('FaceInfoObserver')) return false;
+      final newEvent = eventName.replaceFirst('FaceInfoObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }
 
@@ -591,11 +642,18 @@ class MediaRecorderObserverWrapper implements EventLoopEventHandler {
   @override
   bool handleEvent(
       String eventName, String eventData, List<Uint8List> buffers) {
-    if (!eventName.startsWith('MediaRecorderObserver')) return false;
-    final newEvent = eventName.replaceFirst('MediaRecorderObserver_', '');
-    if (handleEventInternal(newEvent, eventData, buffers)) {
+    try {
+      if (!eventName.startsWith('MediaRecorderObserver')) return false;
+      final newEvent = eventName.replaceFirst('MediaRecorderObserver_', '');
+      if (handleEventInternal(newEvent, eventData, buffers)) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // in normal case, the handleEventInternal will not throw exception if the event is not handled,
+      // so we need to return true here to break the event loop.
+      // we also need to log the error here to help developer to find the problem later.
       return true;
     }
-    return false;
   }
 }

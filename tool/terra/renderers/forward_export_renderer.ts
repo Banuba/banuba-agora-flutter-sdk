@@ -5,7 +5,7 @@ import {
   TerraContext,
 } from "@agoraio-extensions/terra-core";
 import { isCallbackClass } from "./utils";
-import { dartFileName } from "../parsers/dart_syntax_parser";
+import { dartFileName, dartName } from "../parsers/dart_syntax_parser";
 
 /// Generate the files:
 /// - lib/src/binding_forward_export.dart
@@ -19,20 +19,30 @@ export default function ForwardExportRenderer(
   let bindingExportFiles: string[] = [];
   let implExportFiles: string[] = [];
   cxxFiles.forEach((cxxFile: CXXFile) => {
-    bindingExportFiles.push(`export '${dartFileName(cxxFile)}.dart';`);
+    bindingExportFiles.push(`export '/src/${dartFileName(cxxFile)}.dart';`);
 
     let hasImplClass = cxxFile.nodes.find((node) => {
-      return node.__TYPE == CXXTYPE.Clazz && !isCallbackClass(node as Clazz);
+      if (node.__TYPE == CXXTYPE.Clazz && !isCallbackClass(node as Clazz)) {
+        // Check if dartName is not empty to avoid exporting non-existent impl files
+        let clazz = node as Clazz;
+        return dartName(clazz).length > 0;
+      }
+      return false;
     });
     let hasCallbackImplClass = cxxFile.nodes.find((node) => {
-      return node.__TYPE == CXXTYPE.Clazz && isCallbackClass(node as Clazz);
+      if (node.__TYPE == CXXTYPE.Clazz && isCallbackClass(node as Clazz)) {
+        // Check if dartName is not empty
+        let clazz = node as Clazz;
+        return dartName(clazz).length > 0;
+      }
+      return false;
     });
     if (hasImplClass) {
-      implExportFiles.push(`export '${dartFileName(cxxFile)}_impl.dart';`);
+      implExportFiles.push(`export '/src/binding/${dartFileName(cxxFile)}_impl.dart';`);
     }
     if (hasCallbackImplClass) {
       implExportFiles.push(
-        `export '${dartFileName(cxxFile)}_event_impl.dart';`
+        `export '/src/binding/${dartFileName(cxxFile)}_event_impl.dart';`
       );
     }
   });
@@ -40,20 +50,20 @@ export default function ForwardExportRenderer(
   // lib/src/binding_forward_export.dart
   let bindingExport = `
 ${bindingExportFiles.join("\n")}
+export '/src/agora_rtc_engine_ext.dart';
+export '/src/impl/json_converters.dart';
 export 'dart:convert';
 export 'dart:typed_data';
 export 'package:json_annotation/json_annotation.dart';
 export 'package:flutter/foundation.dart';
-export 'package:agora_rtc_engine/src/agora_rtc_engine_ext.dart';
-export 'package:agora_rtc_engine/src/impl/json_converters.dart';
 `;
 
   // lib/src/binding/impl_forward_export.dart
   let implExport = `
 ${implExportFiles.join("\n")}
-export 'event_handler_param_json.dart';
-export 'call_api_impl_params_json.dart';
-export 'call_api_event_handler_buffer_ext.dart';
+export '/src/binding/event_handler_param_json.dart';
+export '/src/binding/call_api_impl_params_json.dart';
+export '/src/binding/call_api_event_handler_buffer_ext.dart';
 `;
 
   return [
