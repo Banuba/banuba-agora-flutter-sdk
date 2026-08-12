@@ -45,6 +45,7 @@ class _State extends State<JoinChannelVideo> {
   bool _isUseFlutterTexture = false;
   // ignore: prefer_final_fields
   bool _isUseAndroidSurfaceView = false;
+  bool _isInitialized = false;
 
   // Test switches
   bool _reuseController = true;
@@ -150,12 +151,17 @@ class _State extends State<JoinChannelVideo> {
 
     _engine.registerEventHandler(_rtcEngineEventHandler);
 
-    await intiBanuba();
-
+    await registerBanubaExtension();
+    await enableExtension();
     await _engine.enableVideo();
     await _engine.startPreview();
 
+    await setBanubaLicenseToken();
     await loadBanubaEffect('Glasses');
+
+    if (mounted) {
+      setState(() => _isInitialized = true);
+    }
   }
 
   Future<void> _updateRemoteVideoController(
@@ -238,16 +244,23 @@ class _State extends State<JoinChannelVideo> {
    * Banuba integration
    */
 
-  Future<void> enableExtension() async {
+  Future<void> registerBanubaExtension() async {
     if (Platform.isAndroid) {
-      _engine.loadExtensionProvider(path: "banuba");
-      _engine.loadExtensionProvider(path: "banuba-plugin");
+      await _engine.loadExtensionProvider(path: "banuba");
+      await _engine.loadExtensionProvider(path: "banuba-plugin");
     }
 
+    await _engine.registerExtension(
+        provider: banubaExtprovider,
+        extension: banubaExtension,
+        type: MediaSourceType.primaryCameraSource);
+  }
+
+  Future<void> enableExtension() async {
     await _engine.enableExtension(
         provider: banubaExtprovider,
         extension: banubaExtension,
-        type: MediaSourceType.unknownMediaSource,
+        type: MediaSourceType.primaryCameraSource,
         enable: true);
   }
 
@@ -255,15 +268,15 @@ class _State extends State<JoinChannelVideo> {
     await _engine.enableExtension(
         provider: banubaExtprovider,
         extension: banubaExtension,
-        type: MediaSourceType.unknownMediaSource,
+        type: MediaSourceType.primaryCameraSource,
         enable: false);
   }
 
-  Future<void> intiBanuba() async {
-    await enableExtension();
+  Future<void> setBanubaLicenseToken() async {
     await _engine.setExtensionProperty(
         provider: banubaExtprovider,
         extension: banubaExtension,
+        type: MediaSourceType.primaryCameraSource,
         key: setToken,
         value: banubaClientToken);
   }
@@ -272,12 +285,17 @@ class _State extends State<JoinChannelVideo> {
     await _engine.setExtensionProperty(
         provider: banubaExtprovider,
         extension: banubaExtension,
+        type: MediaSourceType.primaryCameraSource,
         key: loadEffect,
         value: 'effects/' + name);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return ExampleActionsWidget(
       displayContentBuilder: (context, isLayoutHorizontal) {
         return Stack(

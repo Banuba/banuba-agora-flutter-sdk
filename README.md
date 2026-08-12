@@ -3,6 +3,40 @@ Integration was made in
 [join_channel_video](https://github.com/Banuba/banuba-agora-flutter-sdk/tree/main/example/lib/examples/basic/join_channel_video).
 Intial changes was made in [this commit](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK/compare/main...Banuba:banuba-agora-flutter-sdk:main).
 
+## Required Android initialization
+
+Banuba SDK must receive the Android application context before the Agora
+extension is registered or configured. Add the following initialization to
+your application's `Application` class:
+
+```kotlin
+import android.app.Application
+import com.banuba.sdk.utils.ContextProvider
+
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        ContextProvider.setContext(applicationContext)
+    }
+}
+```
+
+Register the class in `AndroidManifest.xml` if your application does not
+already use a custom `Application`:
+
+```xml
+<application
+    android:name=".MyApplication"
+    ...>
+```
+
+This step is required for the Flutter/Iris integration. The native
+`BanubaExtensionManager.initialize(...)` helper normally sets the context,
+but that helper is not invoked by the Flutter Agora engine. Without this
+initialization, Banuba cannot access packaged effects and shaders and reports
+`Context is null` and resource-not-found errors. See the sample
+[MyApplication.kt](example/android/app/src/main/kotlin/io/agora/agora_rtc_flutter_example/MyApplication.kt).
+
 -----
 
 # agora_rtc_engine
