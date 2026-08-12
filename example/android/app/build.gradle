@@ -67,8 +67,8 @@ dependencies {
     if (devFile.exists()) {
         implementation fileTree(dir: "${rootProject.projectDir.getParentFile().parentFile}/android/libs", include: ["*.aar"])
     }
-    implementation "com.banuba.sdk:banuba_sdk:1.17.+"
-    implementation 'com.banuba.sdk.android:agora-extension:1.5.+'
+    implementation "com.banuba.sdk:banuba_sdk:1.18.+"
+    implementation 'com.banuba.sdk.android:agora-extension:2.6.0'
 }
 
 // Add the lines below to copy effects into App:
