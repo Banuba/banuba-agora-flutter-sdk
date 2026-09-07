@@ -1,10 +1,10 @@
 {
     "assets": {
         "attachments": {
-            "EffectRT0_color": {
+            "effect_color": {
                 "type": "color"
             },
-            "EffectRT0_depth": {
+            "effect_depth": {
                 "clear": [
                     1.0
                 ],
@@ -14,87 +14,62 @@
         "faces": {
             "face0": {
                 "index": 0,
-                "mesh": "!glfx_FACE"
+                "mesh": "!bnb_FACE"
             }
         },
         "images": {
-            "background": {
-                "active": false,
-                "recognizer_feature_name": "background",
-                "type": "segmentation_mask"
-            },
-            "brdf.ktx": {
-                "file_name": "images/brdf.ktx",
+            "Image_1": {
+                "file_name": "images/Image_1.png",
+                "streamed": false,
                 "type": "texture"
             },
             "camera": {
-                "type": "procedural_texture",
-                "algorithm": "camera_composer"
+                "algorithm": "camera_composer",
+                "sort": -1,
+                "type": "procedural_texture"
             },
-            "env.ktx": {
-                "file_name": "images/env.ktx",
-                "type": "cubemap"
+            "glass_002_base_color": {
+                "file_name": "images/glass_002_base_color.png",
+                "streamed": false,
+                "type": "texture"
             },
-            "glasses_BaseColor.png": {
+            "glass_002_emissive": {
+                "file_name": "images/glass_002_emissive.png",
+                "streamed": false,
+                "type": "texture"
+            },
+            "glass_002_normal": {
+                "file_name": "images/glass_002_normal.png",
+                "streamed": false,
+                "type": "texture"
+            },
+            "glasses_BaseColor": {
                 "file_name": "images/glasses_BaseColor.png",
+                "streamed": false,
                 "type": "texture"
             },
-            "glasses_Metallic.png": {
-                "file_name": "images/glasses_Metallic.png",
+            "glasses_Metallic-glasses_Roughness": {
+                "file_name": "images/glasses_Metallic-glasses_Roughness.png",
+                "streamed": false,
                 "type": "texture"
             },
-            "glasses_Normal.png": {
+            "glasses_Normal": {
                 "file_name": "images/glasses_Normal.png",
+                "streamed": false,
                 "type": "texture"
             },
-            "glasses_Roughness.png": {
-                "file_name": "images/glasses_Roughness.png",
+            "glasses_emissive": {
+                "file_name": "images/glasses_emissive.png",
+                "streamed": false,
                 "type": "texture"
             },
-            "hair": {
-                "active": false,
-                "recognizer_feature_name": "hair",
-                "type": "segmentation_mask"
-            },
-            "ibl_diff.ktx": {
+            "ibl_diff": {
                 "file_name": "images/ibl_diff.ktx",
                 "type": "cubemap"
             },
-            "ibl_spec.ktx": {
+            "ibl_spec": {
                 "file_name": "images/ibl_spec.ktx",
                 "type": "cubemap"
-            },
-            "left_eye": {
-                "active": false,
-                "recognizer_feature_name": "left_eye",
-                "type": "segmentation_mask"
-            },
-            "lips": {
-                "active": false,
-                "recognizer_feature_name": "lips",
-                "type": "segmentation_mask"
-            },
-            "null_image.png": {
-                "file_name": "images/null_image.png",
-                "type": "texture"
-            },
-            "null_lut.png": {
-                "file_name": "images/null_lut.png",
-                "type": "texture"
-            },
-            "preview.png": {
-                "file_name": "images/preview.png",
-                "type": "texture"
-            },
-            "right_eye": {
-                "active": false,
-                "recognizer_feature_name": "right_eye",
-                "type": "segmentation_mask"
-            },
-            "skin": {
-                "active": false,
-                "recognizer_feature_name": "skin",
-                "type": "segmentation_mask"
             }
         },
         "materials": {
@@ -114,53 +89,38 @@
                     "zwrite": false
                 }
             },
-            "shaders/glass": {
-                "built_in_samplers": [
-                    "bnb_BONES",
-                    "bnb_UVMORPH_FISHEYE",
-                    "bnb_MORPH"
-                ],
+            "shaders/glass_002": {
                 "samplers": [
                     {
-                        "image": "glasses_BaseColor.png",
-                        "name": "tex_diffuse"
+                        "image": "glass_002_base_color",
+                        "name": "base_color"
                     },
                     {
-                        "image": "glasses_Normal.png",
-                        "name": "tex_normal"
+                        "image": "Image_1",
+                        "name": "metallic_roughness"
                     },
                     {
-                        "image": "glasses_Metallic.png",
-                        "name": "tex_metallic"
+                        "image": "glass_002_normal",
+                        "name": "normal"
                     },
                     {
-                        "image": "glasses_Roughness.png",
-                        "name": "tex_roughness"
-                    },
-                    {
-                        "image": "brdf.ktx",
-                        "name": "tex_brdf"
-                    },
-                    {
-                        "image": "ibl_diff.ktx",
+                        "image": "ibl_diff",
                         "name": "tex_ibl_diff"
                     },
                     {
-                        "image": "ibl_spec.ktx",
+                        "image": "ibl_spec",
                         "name": "tex_ibl_spec"
                     },
                     {
                         "name": "bnb_BONES"
                     },
                     {
-                        "name": "bnb_UVMORPH_FISHEYE"
-                    },
-                    {
-                        "name": "bnb_MORPH"
+                        "image": "glass_002_emissive",
+                        "name": "emissive"
                     }
                 ],
                 "state": {
-                    "backfaces": false,
+                    "backfaces": true,
                     "blend": "alpha",
                     "colorwrite": true,
                     "ztest": true,
@@ -168,85 +128,100 @@
                 }
             },
             "shaders/glasses": {
-                "built_in_samplers": [
-                    "bnb_BONES",
-                    "bnb_UVMORPH_FISHEYE",
-                    "bnb_MORPH"
-                ],
                 "samplers": [
                     {
-                        "image": "glasses_BaseColor.png",
-                        "name": "tex_diffuse"
+                        "image": "glasses_BaseColor",
+                        "name": "base_color"
                     },
                     {
-                        "image": "glasses_Normal.png",
-                        "name": "tex_normal"
+                        "image": "glasses_Metallic-glasses_Roughness",
+                        "name": "metallic_roughness"
                     },
                     {
-                        "image": "glasses_Metallic.png",
-                        "name": "tex_metallic"
+                        "image": "glasses_Normal",
+                        "name": "normal"
                     },
                     {
-                        "image": "glasses_Roughness.png",
-                        "name": "tex_roughness"
-                    },
-                    {
-                        "image": "brdf.ktx",
-                        "name": "tex_brdf"
-                    },
-                    {
-                        "image": "ibl_diff.ktx",
+                        "image": "ibl_diff",
                         "name": "tex_ibl_diff"
                     },
                     {
-                        "image": "ibl_spec.ktx",
+                        "image": "ibl_spec",
                         "name": "tex_ibl_spec"
                     },
                     {
                         "name": "bnb_BONES"
                     },
                     {
-                        "name": "bnb_UVMORPH_FISHEYE"
-                    },
-                    {
-                        "name": "bnb_MORPH"
+                        "image": "glasses_emissive",
+                        "name": "emissive"
                     }
                 ],
                 "state": {
-                    "backfaces": false,
-                    "blend": "off",
+                    "backfaces": true,
+                    "blend": "alpha",
                     "colorwrite": true,
                     "ztest": true,
                     "zwrite": true
                 }
             },
-            "shaders/retouch": {
-                "built_in_samplers": [],
+            "shaders/scene_default_face": {
                 "samplers": [
                     {
-                        "image": "camera",
-                        "name": "glfx_BACKGROUND"
+                        "image": "effect_color",
+                        "name": "bnb_BACKGROUND"
                     }
                 ],
                 "state": {
-                    "backfaces": false,
+                    "backfaces": true,
                     "blend": "off",
-                    "colorwrite": true,
+                    "colorwrite": false,
                     "ztest": true,
                     "zwrite": true
                 }
             }
         },
-        "media": {},
         "meshes": {
-            "!glfx_FACE": "$builtin$meshes/face.stream:0",
+            "!bnb_FACE": "$builtin$meshes/face.stream:0",
             "camera_surface": "$builtin$meshes/fs_tri",
-            "glasses.bsm2": "meshes/glasses.bsm2"
-        },
-        "morphs": {}
+            "draw_instance0": "meshes/glasses.bsm2",
+            "head_cut": "meshes/head_cut.bsm2"
+        }
     },
     "components": {
-        "ComposerRT_copy": {
+        "__internal_face": {
+            "materials": [
+                "shaders/scene_default_face"
+            ],
+            "mesh": "head_cut",
+            "type": "mesh_instance"
+        },
+        "__internal_frx_face": {
+            "materials": [
+                "shaders/scene_default_face"
+            ],
+            "mesh": "!bnb_FACE",
+            "type": "mesh_instance"
+        },
+        "__transformation_face": {
+            "rotation": [
+                -1.57,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ],
+            "translation": [
+                0,
+                0,
+                0
+            ],
+            "type": "transformation_3d"
+        },
+        "camera_copy": {
             "materials": [
                 "$builtin$materials/copy_pixels.0"
             ],
@@ -256,96 +231,93 @@
         "face_tracker:0": {
             "face": "face0",
             "type": "face_tracker"
+        },
+        "glasses": {
+            "animation": {
+                "mode": "loop",
+                "name": "static"
+            },
+            "materials": [
+                "shaders/glasses",
+                "shaders/glass_002"
+            ],
+            "mesh": "draw_instance0",
+            "type": "mesh_instance"
         }
     },
     "entities": {
-        "ComposerRT_copy_append_to_root__": {
+        "__internal_face": {
+            "active": false,
             "components": [
-                "ComposerRT_copy"
+                "__internal_face",
+                "__transformation_face"
             ],
-            "layer": "ComposerRT_copy"
+            "layer": "__internal_face"
+        },
+        "__internal_frx_face": {
+            "components": [
+                "__internal_frx_face"
+            ],
+            "layer": "__internal_frx_face"
+        },
+        "camera_copy": {
+            "components": [
+                "camera_copy"
+            ],
+            "layer": "camera_copy"
         },
         "face_tracker0": {
             "components": [
                 "face_tracker:0"
             ]
         },
-        "spawn_entity0": {
-            "add_to_legacy_entities_list": true,
-            "layers": [
-                "retouch",
-                "glasses",
-                "glass"
-            ]
-        },
-        "spawn_entity1": {
-            "add_to_legacy_entities_list": true,
-            "layers": [
-                "retouch",
-                "glasses",
-                "glass"
-            ]
+        "glasses": {
+            "components": [
+                "glasses"
+            ],
+            "layer": "Draw"
         }
     },
     "hierarchy": {
         "face_tracker0": [
-            "spawn_entity0",
-            "spawn_entity1"
+            "__internal_face",
+            "__internal_frx_face",
+            "glasses"
         ],
         "root": [
             "face_tracker0",
-            "ComposerRT_copy_append_to_root__"
+            "camera_copy"
         ]
-    },
-    "layers": {
-        "ComposerRT_copy": {},
-        "glass": {},
-        "glasses": {},
-        "internal_face_morph__": {},
-        "retouch": {}
     },
     "render_list": {
         "default": [
             {
-                "layer": "ComposerRT_copy",
-                "render_target": "EffectRT0"
+                "layer": "camera_copy",
+                "render_target": "EffectRT"
             },
             {
-                "layer": "retouch",
-                "render_target": "EffectRT0",
-                "sub_geometries": [
-                    "retouch"
-                ]
+                "layer": "__internal_face",
+                "render_target": "EffectRT"
             },
             {
-                "layer": "glasses",
-                "render_target": "EffectRT0",
-                "sub_geometries": [
-                    "glasses"
-                ]
+                "layer": "__internal_frx_face",
+                "render_target": "EffectRT"
             },
             {
-                "layer": "glass",
-                "render_target": "EffectRT0",
-                "sub_geometries": [
-                    "glass"
-                ]
-            },
-            {
-                "layer": "internal_face_morph__",
-                "render_target": "EffectRT0"
+                "layer": "Draw",
+                "render_target": "EffectRT"
             }
         ]
     },
     "render_targets": {
-        "EffectRT0": [
-            "EffectRT0_color",
-            "EffectRT0_depth"
-        ]
+        "EffectRT": {
+            "attachments": [
+            "effect_color",
+            "effect_depth"
+            ],
+            "samples_count": 4
+        }
     },
-    "scene": "Glasses",
-    "script": {
-        "entry_point": "config.js",
-        "type": "legacy"
-    }
+
+    "scene": "glasses"
 }
